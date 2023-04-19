@@ -64,7 +64,7 @@ const addForm = ref({
   dayType:'全天',
   leaveType:'事假',
   halfDay:'上午',
-  createTime: new Date().toLocaleDateString(),
+  createTime: '',
   userName:userStore.userInfo.userName
 })
 const getLeaveOfAbsenceAll = async () => {
@@ -76,6 +76,8 @@ const getLeaveOfAbsenceAll = async () => {
   })
 }
 const handleAdd = async () => {
+  addForm.value.createTime = new Date().toLocaleString('chinese',{hour12:false});
+  console.log('createTime=>',addForm.value.createTime)
   await api.addleaveOfAbsence(addForm.value).then((res)=>{
     message.info(`${res}`)
   })
