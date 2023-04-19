@@ -16,7 +16,9 @@
         <RouterLink to="/lostAndFound">
           <a-menu-item key="1">遗失物品登记</a-menu-item>
         </RouterLink>
-        <a-menu-item key="2">Option 2</a-menu-item>
+        <RouterLink to="/leaveOfAbsence">
+          <a-menu-item key="2">请假申请</a-menu-item>
+        </RouterLink>
         <a-menu-item key="3">Option 3</a-menu-item>
         <a-menu-item key="4">Option 4</a-menu-item>
       </a-sub-menu>

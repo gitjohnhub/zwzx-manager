@@ -1,8 +1,7 @@
 <template>
   <a-row :gutter="[16, 16]">
-    <a-col :span="24">
-      <a-form layout="inline" :model="addForm" ref="formRef" name="addForm"
->
+    <a-col :span="20">
+      <a-form layout="inline" :model="addForm" ref="formRef" name="addForm">
         <a-form-item> 拾到日期:<a-date-picker v-model:value="addForm.pickUpDate" /> </a-form-item>
         <a-form-item>
           <a-select ref="select" v-model:value="addForm.itemType" style="width: 80px">
@@ -39,9 +38,17 @@
           style="width: 200px"
           @search="onSearch"
         />
+        <a-button
+            @click="resetForm"
+          >
+            重置
+          </a-button>
+          <a-badge :count="count" :overflow-count="999" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
         </a-form-item>
       </a-form>
     </a-col>
+  </a-row>
+  <a-row>
     <a-col :span="24">
       <a-table bordered :data-source="dataSource" :columns="columns">
         <template #bodyCell="{ column, record }">
@@ -60,7 +67,7 @@
   </a-row>
 </template>
 <script lang="ts" setup>
-import { computed, reactive, ref, onBeforeMount } from 'vue'
+import { computed, reactive, ref, onBeforeMount,watch } from 'vue'
 import type { Ref, UnwrapRef } from 'vue'
 import api from '@/api'
 import { useUserStore } from '@/stores';
@@ -93,6 +100,7 @@ const resetForm = () => {
   addForm.value.note =  ''
   addForm.value.recorder =  userStore.userInfo.userName
   addForm.value.createTime =  new Date().toLocaleDateString()
+  searchText.value = ""
 }
 const dataSource: Ref<DataItem[]> = ref([])
 const getLostFoundAll = async () => {
@@ -124,8 +132,32 @@ interface DataItem {
   recorder:string,
   confirmer?:string
 }
+// 搜索组件
 const searchText = ref('')
-const onSearch = () => {}
+const searchData = () => {
+  const list = dataSource.value.filter(item => {
+    return item.withName?.includes(searchText.value) || item.IdNum?.includes(searchText.value)
+  })
+  // 更新 dataList,触发界面更新
+  dataSource.value = list
+}
+watch(searchText,()=>{
+  if (searchText.value != ''){
+    searchData()
+  }else{
+    getLostFoundAll()
+  }
+
+})
+
+const onSearch = () => {
+  if (searchText.value != ""){
+    searchData()
+  }else{
+    getLostFoundAll()
+  }
+
+}
 const columns = [
   {
     title: '拾取日期',
@@ -164,7 +196,7 @@ const columns = [
     dataIndex: 'operation'
   }
 ]
-const count = computed(() => dataSource.value.length + 1)
+const count = computed(() => dataSource.value.length)
 const editableData: UnwrapRef<Record<string, DataItem>> = reactive({})
 
 const edit = (key: string) => {

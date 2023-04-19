@@ -13,7 +13,7 @@ export default {
   },
   noticeCount(){
     return GET(
-      '/leave/count',
+      '/leaveOfAbsence/count',
     )}
   ,
   lostFoundAll(){
@@ -24,6 +24,18 @@ export default {
   addLostFound(params:any){
     return POST(
       '/lostFound/add',
+      params,
+    )
+  },
+  leaveOfAbsenceAll(params:any){
+    return POST(
+      '/leaveOfAbsence/all',
+      params,
+    )
+  },
+  addleaveOfAbsence(params:any){
+    return POST(
+      '/leaveOfAbsence/add',
       params,
     )
   },

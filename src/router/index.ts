@@ -26,7 +26,15 @@ const routes = [
           title:'遗失物品',
           requiresAuth: true,
         },
-        component:()=>import('@/components/LostFoundView.vue'),
+        component:()=>import('@/views/LostFoundView.vue'),
+      },{
+        name:'leaveOfAbsence',
+        path:'/leaveOfAbsence',
+        meta:{
+          title:'请假申请',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/leaveOfAbsenceView.vue'),
       }
     ]
   },
