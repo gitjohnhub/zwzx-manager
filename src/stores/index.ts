@@ -9,8 +9,6 @@ export const useUserStore = defineStore('user', {
     saveUserInfo(userInfo:any){
       this.userInfo = userInfo;
       storage.setItem('userInfo',userInfo)
-      console.log("userInfo=>",userInfo)
-
     }
   }
 

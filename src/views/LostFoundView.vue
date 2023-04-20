@@ -52,6 +52,12 @@
     <a-col :span="24">
       <a-table bordered :data-source="dataSource" :columns="columns">
         <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'hasDraw'">
+            {{ record.hasDraw ? '已领取' :'未领取' }}
+          </template>
+          <template v-if="column.dataIndex === 'pickUpDate'">
+            {{ record.pickUpDate ? record.pickUpDate.slice(0,10) :'' }}
+          </template>
           <template v-if="column.dataIndex === 'operation'">
             <a-popconfirm
               v-if="dataSource.length"
@@ -67,8 +73,7 @@
   </a-row>
 </template>
 <script lang="ts" setup>
-import { computed, reactive, ref, onBeforeMount,watch } from 'vue'
-import type { Ref, UnwrapRef } from 'vue'
+import { computed, ref, onBeforeMount,watch } from 'vue'
 import api from '@/api'
 import { useUserStore } from '@/stores';
 import type { FormInstance } from 'ant-design-vue';
@@ -102,27 +107,17 @@ const resetForm = () => {
   addForm.value.createTime =  new Date().toLocaleDateString()
   searchText.value = ""
 }
-const dataSource: Ref<DataItem[]> = ref([])
+const dataSource = ref<DataItem[]>([])
 const getLostFoundAll = async () => {
   await api.lostFoundAll().then((res) => {
     resetForm()
     console.log('lostFound=>', res)
-    if (res) {
-      dataSource.value = res
-      .sort((a:DataItem,b:DataItem)=>{
-        return new Date(b.pickUpDate) - new Date(a.pickUpDate)
-      })
-      .map((item) => {
-        item.hasDraw = item.hasDraw == 0 ? '未领取' : '已领取'
-        item.pickUpDate = new Date(item.pickUpDate).toISOString().slice(0,10)
-        return item
-      })
-    }
+      dataSource.value = res as <DataItem>[]
   })
 }
 interface DataItem {
   _id: string
-  pickUpDate: ''
+  pickUpDate: string
   itemType: string
   withName?: string
   IdNum?: string
@@ -197,62 +192,21 @@ const columns = [
   }
 ]
 const count = computed(() => dataSource.value.length)
-const editableData: UnwrapRef<Record<string, DataItem>> = reactive({})
-
-const edit = (key: string) => {
-  // editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
-}
-const save = (key: string) => {
-  Object.assign(dataSource.value.filter((item) => key === item.key)[0], editableData[key])
-  delete editableData[key]
-}
 
 const onConfirmHasDraw = async (key: string,confirmer:string) => {
-  await api.confirmLostFound({_id:key,confirmer:confirmer}).then(()=>getLostFoundAll())
+  await api.confirmLostFound({_id:key,confirmer:confirmer}).then(()=>{
+    message.info('确认成功')
+    getLostFoundAll()
+  }
+    )
 }
 const handleAdd = async () => {
-  await api.addLostFound(addForm.value).then(()=>getLostFoundAll())
+  await api.addLostFound(addForm.value).then(()=>{
+    message.info('添加成功')
+    getLostFoundAll()
+  })
 }
 </script>
 <style>
-.editable-cell {
-  position: relative;
-}
-.editable-cell-input-wrapper,
-.editable-cell-text-wrapper {
-  padding-right: 24px;
-}
 
-.editable-cell-text-wrapper {
-  padding: 5px 24px 5px 5px;
-}
-
-.editable-cell-icon,
-.editable-cell-icon-check {
-  position: absolute;
-  right: 0;
-  width: 20px;
-  cursor: pointer;
-}
-
-.editable-cell-icon {
-  margin-top: 4px;
-  display: none;
-}
-
-.editable-cell-icon-check {
-  line-height: 28px;
-}
-
-.editable-cell-icon:hover,
-.editable-cell-icon-check:hover {
-  color: #108ee9;
-}
-
-.editable-add-btn {
-  margin-bottom: 8px;
-}
-.editable-cell:hover .editable-cell-icon {
-  display: inline-block;
-}
 </style>

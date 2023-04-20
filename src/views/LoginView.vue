@@ -1,16 +1,16 @@
 <template>
   <div class="login-wrapper">
-      <div class="title">政务中心内部登录</div>
-      <a-form :model="user" :label-col="{ span: 8 }"
-    :wrapper-col="{ span: 16 }">
+      <!-- <div class="title">登录页面</div> -->
+      <a-form :model="user" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-form-item label="用户名：">
           <a-input type="text" v-model:value="user.userName"></a-input>
         </a-form-item>
         <a-form-item label="密码：">
           <a-input type="password" v-model:value="user.userPwd"></a-input>
         </a-form-item>
-        <a-form-item>
-          <a-button type="primary" block @click="login">登录</a-button>
+        <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
+          <a-button type="primary" @click="login">登录</a-button>
+          <a-button  @click="register">注册</a-button>
         </a-form-item>
       </a-form>
 
@@ -23,6 +23,7 @@ import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import api from '../api/index'
 import { useUserStore } from '@/stores/index';
+import { message } from 'ant-design-vue';
 const router = useRouter()
 const userStore = useUserStore()
 const user =ref({
@@ -31,13 +32,17 @@ const user =ref({
 })
 
 const login = (()=>{
-  console.log("user.value=>",user.value)
   api.login(user.value).then((res:any)=>{
     userStore.saveUserInfo(res)
-    console.log("login res=>",res)
     router.push('welcome')
   })
 
+})
+const register = (()=>{
+  api.register(user.value).then((res:any)=>{
+    userStore.saveUserInfo(res)
+    message.info('注册成功')
+  })
 })
 
 </script>

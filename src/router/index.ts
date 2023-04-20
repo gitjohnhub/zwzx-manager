@@ -45,6 +45,15 @@ const routes = [
           requiresAuth: true,
         },
         component:()=>import('@/views/leaveOfAbsenceApprovelView.vue'),
+      },
+      {
+        name:'userManagment',
+        path:'/userManagment',
+        meta:{
+          title:'用户管理',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/userManagmentView.vue'),
       }
     ]
   },

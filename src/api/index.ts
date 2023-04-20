@@ -11,6 +11,12 @@ export default {
       params,
     )
   },
+  register(params:any){
+    return POST(
+      '/users/register',
+      params,
+    )
+  },
   noticeCount(){
     return GET(
       '/leaveOfAbsence/count',

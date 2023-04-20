@@ -12,40 +12,36 @@
         <template #icon>
           <MailOutlined />
         </template>
-        <template #title>登记</template>
+        <template #title>大厅管理</template>
         <RouterLink to="/lostAndFound">
           <a-menu-item key="1">遗失物品管理</a-menu-item>
-        </RouterLink>
-        <RouterLink to="/leaveOfAbsence">
-          <a-menu-item key="2">请假申请</a-menu-item>
         </RouterLink>
         <a-menu-item key="3">Option 3</a-menu-item>
         <a-menu-item key="4">Option 4</a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="sub2">
-        <template #icon></template>
+        <template #icon>
+          <SettingOutlined />
+        </template>
+        <template #title>员工管理</template>
+        <RouterLink to="/leaveOfAbsence">
+          <a-menu-item key="9">请假申请</a-menu-item>
+        </RouterLink>
+        <a-menu-item key="10">Option 10</a-menu-item>
+        <a-menu-item key="11">Option 11</a-menu-item>
+        <a-menu-item key="12">Option 12</a-menu-item>
+      </a-sub-menu>
+      <a-sub-menu key="sub3">
+        <template #icon><AppstoreOutlined /></template>
         <template #title>
-          <AppstoreOutlined />
-          审批系统
+           审批系统
         </template>
         <RouterLink to="/leaveOfAbsenceApprovel">
           <a-menu-item key="5">请假审批</a-menu-item>
         </RouterLink>
-        <a-menu-item key="6">Option 6</a-menu-item>
-        <a-sub-menu key="sub3" title="Submenu">
-          <a-menu-item key="7">Option 7</a-menu-item>
-          <a-menu-item key="8">Option 8</a-menu-item>
-        </a-sub-menu>
-      </a-sub-menu>
-      <a-sub-menu key="sub4">
-        <template #icon>
-          <SettingOutlined />
-        </template>
-        <template #title>Navigation Three</template>
-        <a-menu-item key="9">Option 9</a-menu-item>
-        <a-menu-item key="10">Option 10</a-menu-item>
-        <a-menu-item key="11">Option 11</a-menu-item>
-        <a-menu-item key="12">Option 12</a-menu-item>
+        <RouterLink to="/userManagment">
+          <a-menu-item key="6">用户管理</a-menu-item>
+        </RouterLink>
       </a-sub-menu>
     </a-menu>
   </div>
