@@ -27,7 +27,8 @@ const routes = [
           requiresAuth: true,
         },
         component:()=>import('@/views/LostFoundView.vue'),
-      },{
+      },
+      {
         name:'leaveOfAbsence',
         path:'/leaveOfAbsence',
         meta:{
@@ -35,6 +36,15 @@ const routes = [
           requiresAuth: true,
         },
         component:()=>import('@/views/leaveOfAbsenceView.vue'),
+      },
+      {
+        name:'leaveOfAbsenceApprovel',
+        path:'/leaveOfAbsenceApprovel',
+        meta:{
+          title:'请假申请',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/leaveOfAbsenceApprovelView.vue'),
       }
     ]
   },

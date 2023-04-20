@@ -12,9 +12,9 @@
         <template #icon>
           <MailOutlined />
         </template>
-        <template #title>Navigation One</template>
+        <template #title>登记</template>
         <RouterLink to="/lostAndFound">
-          <a-menu-item key="1">遗失物品登记</a-menu-item>
+          <a-menu-item key="1">遗失物品管理</a-menu-item>
         </RouterLink>
         <RouterLink to="/leaveOfAbsence">
           <a-menu-item key="2">请假申请</a-menu-item>
@@ -26,9 +26,11 @@
         <template #icon></template>
         <template #title>
           <AppstoreOutlined />
-          Navigation Two
+          审批系统
         </template>
-        <a-menu-item key="5">Option 5</a-menu-item>
+        <RouterLink to="/leaveOfAbsenceApprovel">
+          <a-menu-item key="5">请假审批</a-menu-item>
+        </RouterLink>
         <a-menu-item key="6">Option 6</a-menu-item>
         <a-sub-menu key="sub3" title="Submenu">
           <a-menu-item key="7">Option 7</a-menu-item>

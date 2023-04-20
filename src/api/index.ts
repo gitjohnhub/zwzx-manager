@@ -39,6 +39,12 @@ export default {
       params,
     )
   },
+  approveLeaveOfAbsence(params:any){
+    return POST(
+      '/leaveOfAbsence/approve',
+      params,
+    )
+  },
   confirmLostFound(params:any){
     return POST(
       '/lostFound/confirmLostFound',

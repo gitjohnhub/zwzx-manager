@@ -2,27 +2,40 @@
   <a-steps :current="state().current" size="small" :status="state().status">
     <a-step>
       <!-- <span slot="title">Finished</span> -->
-      <template #title>{{ leaveData.createTime }}</template>
+      <template #title>{{ new Date(leaveData.createTime).toISOString().slice(0,10) }}</template>
       <template #description>
         <p>
           <span>您已提交{{ leaveData.leaveType }}申请</span>
         </p>
-        <p>{{ new Date(leaveData.leaveDate[0]).toLocaleString('chinese',{hour12:false}).slice(0,10) }}-{{ new Date(leaveData.leaveDate[1]).toLocaleString('chinese',{hour12:false}).slice(0,10)  }}</p>
+        <p>
+          {{
+            new Date(leaveData.leaveDate[0])
+              .toLocaleString('chinese', { hour12: false })
+              .slice(0, 10)
+          }}-{{
+            new Date(leaveData.leaveDate[1])
+              .toLocaleString('chinese', { hour12: false })
+              .slice(0, 10)
+          }}
+        </p>
         <p>{{ leaveData.dayType }}</p>
       </template>
     </a-step>
-    <a-step
-      :title="state().title"
-      :description="state().description"
-    />
+    <a-step :title="state().title">
+      <template #description>
+        <p>
+          <span>{{leaveData.approveby}}{{state().description }}</span>
+        </p>
+      </template>
+    </a-step>
   </a-steps>
 </template>
 <script setup lang="ts">
-import { watch } from 'vue'
+import { onBeforeMount } from 'vue'
 const state = () => {
   switch (props.leaveData.approve) {
     case 1:
-       return {
+      return {
         title: '已审批',
         current: 1,
         description: '已同意',
@@ -48,11 +61,7 @@ const state = () => {
 const props = defineProps<{
   leaveData: any
 }>()
-watch(props.leaveData, () => {
-  if (props.leaveData.approve == 1) {
-    state.value.title = '已审批'
-    state.value.current = 2
-    state.value.description = '已同意'
-  }
+onBeforeMount(()=>{
+  console.log("props=>",props.leaveData)
 })
 </script>

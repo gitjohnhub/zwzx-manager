@@ -81,6 +81,8 @@ const handleAdd = async () => {
   await api.addleaveOfAbsence(addForm.value).then((res)=>{
     message.info(`${res}`)
   })
+  getLeaveOfAbsenceAll()
+
 }
 
 </script>
