@@ -79,6 +79,7 @@ import { useUserStore } from '@/stores';
 import type { FormInstance } from 'ant-design-vue';
 import { message } from 'ant-design-vue';
 // import { cloneDeep } from 'lodash-es';
+
 onBeforeMount(() => {
   getLostFoundAll()
 })
@@ -109,10 +110,10 @@ const resetForm = () => {
 }
 const dataSource = ref<DataItem[]>([])
 const getLostFoundAll = async () => {
-  await api.lostFoundAll().then((res) => {
+  await api.lostFoundAll().then((data:any) => {
     resetForm()
-    console.log('lostFound=>', res)
-      dataSource.value = res as <DataItem>[]
+    console.log('lostFound=>', data)
+      dataSource.value = data
   })
 }
 interface DataItem {

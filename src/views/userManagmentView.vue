@@ -1,10 +1,10 @@
 <template>
   <a-table :columns="columns" :data-source="dataSource">
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'approve'">
+      <template v-if="column.key === 'state'">
         <span>
-          <a-tag :color="approve_status[record.approve].color">
-            {{ approve_status[record.approve].status }}
+          <a-tag color="red">
+            {{ record.state }}
           </a-tag>
         </span>
       </template>
@@ -20,11 +20,11 @@
       </template>
       <template v-if="column.key === 'action'">
         <span>
-          <a-button type="primary" style="inline" @click="approveLeaveOfAbsence(record._id, 1)"
+          <a-button type="primary" style="inline" @click="mark_leave"
             >同意</a-button
           >
           <a-divider type="vertical" />
-          <a-button type="danger" style="inline" @click="approveLeaveOfAbsence(record._id, 2)">
+          <a-button type="danger" style="inline" @click="mark_leave">
             驳回
           </a-button>
         </span>
@@ -39,86 +39,86 @@ import { useUserStore } from '@/stores'
 import { message } from 'ant-design-vue'
 // import { cloneDeep } from 'lodash-es';
 onBeforeMount(() => {
-  getLeaveOfAbsenceAll()
-  console.log('approvedatasource=>', dataSource)
+  getUsersAll()
+  console.log('usersAll=>', dataSource)
 })
 const userStore = useUserStore()
+type Users = {
+  _id: string,
+    userName: string,
+    userPwd: string,
+    deptId: [],
+    state: number,
+    role: number,
+    roleList: [],
+    createTime: string,
+    lastLoginTime: string,
+}
+
 const dataSource = ref()
 const approve_status = [
   { status: '未审批', color: 'volcano' },
   { status: '已审批', color: 'green' },
   { status: '已驳回', color: 'red' }
 ]
-const getLeaveOfAbsenceAll = async () => {
-  await api.leaveOfAbsenceAll({ userName: userStore.userInfo.userName }).then((res: any) => {
-    console.log('leaveAbsence=>', res)
+const getUsersAll = async () => {
+  await api.usersAll().then((res: any) => {
+    console.log('usersAll=>', res)
     if (res) {
       dataSource.value = res
     }
   })
 }
-const approveLeaveOfAbsence = async (id: string, approveId: number) => {
-  await api
-    .approveLeaveOfAbsence({
-      _id: id,
-      confirmer: userStore.userInfo.userName,
-      approveId: approveId
-    })
-    .then(() => {
-      message.info('审批完成')
-    })
-  getLeaveOfAbsenceAll()
-}
+const mark_leave = (()=>{
+
+})
+
 const columns = [
   {
-    title: '提交时间',
+    title: '创建时间',
     dataIndex: 'createTime',
     key: 'createTime',
     width: 100
   },
   {
-    title: '申请人',
+    title: '用户',
     dataIndex: 'userName',
     key: 'userName'
   },
   {
-    title: '请假时间',
-    dataIndex: 'leaveDate',
-    key: 'leaveDate'
+    title: '部门编号',
+    dataIndex: 'deptId',
+    key: 'deptId'
   },
   {
-    title: '请假天数',
-    dataIndex: 'halfDay',
-    key: 'halfDay'
+    title: '用户状态',
+    dataIndex: 'state',
+    key: 'state',
+    filters: [
+      {
+        text: '在职',
+        value: '在职',
+      }
+    ],
+    onFilter: (value: string, record: any) => {
+      console.log("value=>",value)
+    },
   },
   {
-    title: '备注',
-    dataIndex: 'note',
-    key: 'note'
+    title: '角色',
+    dataIndex: 'role',
+    key: 'role'
+  },
+  {
+    title: '角色列表',
+    dataIndex: 'roleList',
+    key: 'roleList'
   },
   {
     title: '是否同意',
     dataIndex: 'approve',
     key: 'approve',
-    filters: [
-      {
-        text: '已审批',
-        value: '已审批',
-      },
-      {
-        text: '未审批',
-        value: '未审批',
-      },
-      {
-        text: '已驳回',
-        value: '已驳回',
-      }
-    ],
-    onFilter: (value: string, record: any) => {
-      console.log("value=>",value)
-      console.log("record=>",approve_status[record.approve].status)
-      return approve_status[record.approve].status == value
-    },
+
   },
   {
     title: '审批人',

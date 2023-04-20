@@ -3,7 +3,6 @@
  */
 import {POST,GET} from "../utils/request"
 import request from "../utils/request"
-
 export default {
   login(params:any){
     return POST(
@@ -17,6 +16,11 @@ export default {
       params,
     )
   },
+  usersAll(){
+    return GET(
+      '/users/all',
+    )},
+
   noticeCount(){
     return GET(
       '/leaveOfAbsence/count',
