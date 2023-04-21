@@ -84,6 +84,16 @@ export default {
       data:{},
     })
   },
+  //服务台管理
+  helpDeskContact(){
+    return GET(
+      '/helpDeskContact/all',
+    )},
+  addHelpDeskContact(params:any){
+    return POST(
+      '/helpDeskContact/add',
+      params,
+    )},
   //十部门综合窗口管理
   generalWindowContact(){
     return GET(
