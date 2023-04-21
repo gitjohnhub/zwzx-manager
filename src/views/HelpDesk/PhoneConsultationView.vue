@@ -27,7 +27,7 @@
     <!-- Form Button -->
 
     <a-form-item >
-      <a-button type="primary" @click="handleAdd" :disabled="addForm.item.length === 0">
+      <a-button type="primary" block @click="handleAdd" :disabled="addForm.item.length === 0">
         增加联系部门
       </a-button>
     </a-form-item>
@@ -83,6 +83,13 @@
         <span>
           <a-tag>
             {{ record.result }}
+          </a-tag>
+        </span>
+      </template>
+      <template v-if="column.key === 'createTime'">
+        <span>
+          <a-tag>
+            {{ record.createTime }}
           </a-tag>
         </span>
       </template>
@@ -210,6 +217,7 @@ const getData = async () => {
 }
 
 const handleAdd = async () => {
+  addForm.value.createTime = new Date().toISOString()
   await api.addPhoneConsultation(addForm.value).then((res) => {
     message.info(`${res}`)
   })
@@ -227,6 +235,7 @@ const columns_original = [
   { key: 'result', title: '结果告知' },
   { key: 'note', title: '备注' },
   { key: 'userName', title: '提交人' },
+  { key: 'createTime', title: '提交时间' },
   { key: 'action', title: '动作' }
 ]
 
