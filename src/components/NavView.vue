@@ -9,15 +9,29 @@
       class="nav"
     >
       <a-sub-menu key="sub1">
-        <template #icon>
-          <MailOutlined />
+        <template #icon></template>
+        <template #title>
+          <AppstoreOutlined />
+          大厅管理
         </template>
-        <template #title>大厅管理</template>
-        <RouterLink to="/lostAndFound">
-          <a-menu-item key="1">遗失物品管理</a-menu-item>
-        </RouterLink>
-        <a-menu-item key="3">Option 3</a-menu-item>
-        <a-menu-item key="4">Option 4</a-menu-item>
+        <a-sub-menu key="13" title="服务台">
+          <RouterLink to="/lostAndFound">
+            <a-menu-item key="1">遗失物品管理</a-menu-item>
+          </RouterLink>
+          <RouterLink to="/HelpDeskContact">
+            <a-menu-item key="17">联系电话</a-menu-item>
+          </RouterLink>
+
+        </a-sub-menu>
+        <a-sub-menu key="14" title="十部门综窗">
+          <RouterLink to="/ReceiveCertificate">
+            <a-menu-item key="15">民政领证登记表</a-menu-item>
+          </RouterLink>
+
+          <RouterLink to="/GeneralWindowContact">
+            <a-menu-item key="16">联系表</a-menu-item>
+          </RouterLink>
+        </a-sub-menu>
       </a-sub-menu>
       <a-sub-menu key="sub2">
         <template #icon>
@@ -33,9 +47,7 @@
       </a-sub-menu>
       <a-sub-menu key="sub3">
         <template #icon><AppstoreOutlined /></template>
-        <template #title>
-           审批系统
-        </template>
+        <template #title> 审批系统 </template>
         <RouterLink to="/leaveOfAbsenceApprovel">
           <a-menu-item key="5">请假审批</a-menu-item>
         </RouterLink>
@@ -47,38 +59,36 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue';
-import { MailOutlined, AppstoreOutlined, SettingOutlined } from '@ant-design/icons-vue';
+import { defineComponent, reactive, toRefs } from 'vue'
+import { AppstoreOutlined, SettingOutlined } from '@ant-design/icons-vue'
 export default defineComponent({
   components: {
-    MailOutlined,
     AppstoreOutlined,
-    SettingOutlined,
+    SettingOutlined
   },
   setup() {
     const state = reactive({
       rootSubmenuKeys: ['sub1', 'sub2', 'sub4'],
       openKeys: ['sub1'],
-      selectedKeys: [],
-    });
+      selectedKeys: []
+    })
     const onOpenChange = (openKeys: string[]) => {
-      const latestOpenKey = openKeys.find(key => state.openKeys.indexOf(key) === -1);
+      const latestOpenKey = openKeys.find((key) => state.openKeys.indexOf(key) === -1)
       if (state.rootSubmenuKeys.indexOf(latestOpenKey!) === -1) {
-        state.openKeys = openKeys;
+        state.openKeys = openKeys
       } else {
-        state.openKeys = latestOpenKey ? [latestOpenKey] : [];
+        state.openKeys = latestOpenKey ? [latestOpenKey] : []
       }
-    };
+    }
     return {
       ...toRefs(state),
-      onOpenChange,
-    };
-  },
-});
+      onOpenChange
+    }
+  }
+})
 </script>
 <style>
-.nav{
+.nav {
   height: 100vh;
 }
 </style>
-

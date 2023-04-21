@@ -54,7 +54,34 @@ const routes = [
           requiresAuth: true,
         },
         component:()=>import('@/views/userManagmentView.vue'),
-      }
+      },
+      {
+        name:'GeneralWindowContact',
+        path:'/GeneralWindowContact',
+        meta:{
+          title:'十部门综窗联系电话表',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/GeneralWindow/GeneralWindowContactView.vue'),
+      },
+      {
+        name:'ReceiveCertificate',
+        path:'/ReceiveCertificate',
+        meta:{
+          title:'民政发证管理',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/GeneralWindow/ReceiveCertificateView.vue'),
+      },
+      {
+        name:'HelpDeskContact',
+        path:'/HelpDeskContact',
+        meta:{
+          title:'服务台联系电话表',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/HelpDesk/HelpDeskContactView.vue'),
+      },
     ]
   },
   {

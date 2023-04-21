@@ -1,0 +1,157 @@
+<template>
+  <a-row :gutter="[16, 16]">
+    <a-col :span="24">
+      <a-form layout="inline" :model="addForm" ref="formRef" name="addForm">
+        <a-form-item>
+          <a-input v-model:value="addForm.companyName" placeholder="公司名称" > </a-input>
+        </a-form-item>
+        <a-form-item>
+          <a-input v-model:value="addForm.drawName" placeholder="领取人姓名" > </a-input>
+        </a-form-item>
+        <a-form-item>
+          <a-input v-model:value="addForm.drawId" placeholder="身份证号"> </a-input>
+        </a-form-item>
+        <a-form-item>
+          <a-input v-model:value="addForm.drawContact" placeholder="联系方式"> </a-input>
+        </a-form-item>
+        <a-form-item>
+          <a-button
+            type="primary"
+            @click="handleAdd"
+            :disabled="addForm.drawContact === '' || addForm.drawName === ''"
+          >
+            增加
+          </a-button>
+        </a-form-item>
+      </a-form>
+    </a-col>
+  </a-row>
+  <a-row>
+    <a-col :span="24">
+      <a-table bordered :data-source="dataSource" :columns="columns">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'hasDraw'">
+            {{ record.hasDraw ? '已领取' :'未领取' }}
+          </template>
+          <template v-if="column.dataIndex === 'drawDate'">
+            {{ record.drawDate ? record.drawDate.slice(0,10) :'' }}
+          </template>
+          <template v-if="column.dataIndex === 'operation'">
+            <a-popconfirm
+              v-if="dataSource.length"
+              title="确认已领取?"
+              @confirm="onConfirmHasDraw(record._id,1,userInfo.userName)"
+            >
+              <a-button type="primary">已领取</a-button>
+            </a-popconfirm>
+          </template>
+        </template>
+      </a-table>
+    </a-col>
+  </a-row>
+</template>
+<script lang="ts" setup>
+import {  ref, onBeforeMount } from 'vue'
+import api from '@/api'
+import { useUserStore } from '@/stores';
+import type { FormInstance } from 'ant-design-vue';
+import { message } from 'ant-design-vue';
+// import { cloneDeep } from 'lodash-es';
+const userInfo = useUserStore().userInfo
+onBeforeMount(() => {
+  getData()
+})
+interface DataItem {
+  companyName: string,
+  drawName: string,
+  drawId: string,
+  drawContact: string,
+  drawDate:string,
+  hasDraw:number,
+  note:string,
+  confirmer:string,
+  createTime: string
+}
+const formRef = ref<FormInstance>()
+const addForm = ref<DataItem>({
+  createTime: '',
+  companyName: '',
+  drawName: '',
+  drawId: '',
+  drawContact: '',
+  drawDate:'',
+  hasDraw:0,
+  note:'',
+  confirmer:''
+})
+const columns = [
+{
+    title: '登记日期',
+    dataIndex: 'createTime'
+  },
+  {
+    title: '公司名称',
+    dataIndex: 'companyName'
+  },
+  {
+    title: '领取人姓名',
+    dataIndex: 'drawName'
+  },
+  {
+    title: '身份证号',
+    dataIndex: 'drawId'
+  },
+  {
+    title: '联系电话',
+    dataIndex: 'drawContact'
+  },
+  {
+    title: '是否已领取',
+    dataIndex: 'hasDraw'
+  },
+  {
+    title: '确认工作人员',
+    dataIndex: 'confirmer'
+  },
+  {
+    title: '备注',
+    dataIndex: 'note'
+  },
+  {
+    title: '确认时间',
+    dataIndex: 'drawDate'
+  },
+  {
+    title: '操作',
+    dataIndex: 'operation'
+  }
+]
+
+const dataSource = ref<DataItem[]>([])
+const getData = async () => {
+  await api.receiveCertificate().then((data:any) => {
+    console.log('receiveCertificate=>', data)
+      dataSource.value = data
+  })
+}
+const onConfirmHasDraw = async (key: string,hasDraw:number,confirmer:string) => {
+  await api.updateReceiveCertificate({_id:key,hasDraw:hasDraw,confirmer:confirmer}).then(()=>{
+    message.info('确认成功')
+    getData()
+  }
+    )
+}
+
+const handleAdd = async () => {
+  addForm.value.createTime = new Date().toISOString().slice(0,10)
+  await api.addReceiveCertificate(addForm.value).then(()=>{
+    message.info('添加成功')
+    getData()
+  })
+}
+
+
+</script>
+<style>
+
+</style>

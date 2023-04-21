@@ -4,6 +4,9 @@
 import {POST,GET} from "../utils/request"
 import request from "../utils/request"
 export default {
+  /*
+  * 用户管理模块
+   */
   login(params:any){
     return POST(
       '/users/login',
@@ -20,12 +23,24 @@ export default {
     return GET(
       '/users/all',
     )},
-
+  markLeave(params:any){
+    return POST(
+      '/users/markLeave',
+      params,
+    )
+  },
+  markEntry(params:any){
+    return POST(
+      '/users/markEntry',
+      params,
+    )
+  },
   noticeCount(){
     return GET(
       '/leaveOfAbsence/count',
     )}
   ,
+  // 遗失物品管理
   lostFoundAll(){
     return GET(
       '/lostFound/all',
@@ -37,6 +52,13 @@ export default {
       params,
     )
   },
+  confirmLostFound(params:any){
+    return POST(
+      '/lostFound/confirmLostFound',
+      params,
+    )
+  },
+  // 请假管理
   leaveOfAbsenceAll(params:any){
     return POST(
       '/leaveOfAbsence/all',
@@ -55,17 +77,40 @@ export default {
       params,
     )
   },
-  confirmLostFound(params:any){
-    return POST(
-      '/lostFound/confirmLostFound',
-      params,
-    )
-  },
   menuList(){
     return request({
       url:'/menu/list',
       method:'get',
       data:{},
     })
-  }
+  },
+  //十部门综合窗口管理
+  generalWindowContact(){
+    return GET(
+      '/generalWindowContact/all',
+    )}
+  ,
+  addGeneralWindowContact(params:any){
+    return POST(
+      '/generalWindowContact/add',
+      params,
+    )
+  },
+  receiveCertificate(){
+    return GET(
+      '/receiveCertificate/all',
+    )
+  },
+  addReceiveCertificate(params:any){
+    return POST(
+      '/receiveCertificate/add',
+      params,
+    )
+  },
+  updateReceiveCertificate(params:any){
+    return POST(
+      '/receiveCertificate/update',
+      params,
+    )
+  },
 }

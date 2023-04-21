@@ -1,31 +1,28 @@
 <template>
   <a-table :columns="columns" :data-source="dataSource">
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'state'">
+      <template v-if="column.key === 'createTime'">
         <span>
-          <a-tag color="red">
-            {{ record.state }}
+          <a-tag>
+            {{ record.createTime ? record.createTime.slice(0,10) : '' }}
           </a-tag>
         </span>
       </template>
-      <template v-if="column.key === 'leaveDate'">
+      <template v-if="column.key === 'state'">
         <span>
           <a-tag>
-            {{ record.leaveDate[0].slice(0,10) }}
-          </a-tag>
-          <a-tag>
-            {{ record.leaveDate[1].slice(0,10) }}
+            {{ approve_status[record.state].status }}
           </a-tag>
         </span>
       </template>
       <template v-if="column.key === 'action'">
         <span>
-          <a-button type="primary" style="inline" @click="mark_leave"
-            >同意</a-button
+          <a-button type="primary" v-if="record.state == 0" style="inline" @click="mark_entry(record._id)"
+            >注册</a-button
           >
           <a-divider type="vertical" />
-          <a-button type="danger" style="inline" @click="mark_leave">
-            驳回
+          <a-button type="danger"  v-if="record.state == 1" style="inline" @click="mark_leave(record._id)">
+            离职
           </a-button>
         </span>
       </template>
@@ -35,41 +32,51 @@
 <script lang="ts" setup>
 import { ref, onBeforeMount } from 'vue'
 import api from '@/api'
-import { useUserStore } from '@/stores'
 import { message } from 'ant-design-vue'
 // import { cloneDeep } from 'lodash-es';
 onBeforeMount(() => {
   getUsersAll()
   console.log('usersAll=>', dataSource)
 })
-const userStore = useUserStore()
-type Users = {
-  _id: string,
-    userName: string,
-    userPwd: string,
-    deptId: [],
-    state: number,
-    role: number,
-    roleList: [],
-    createTime: string,
-    lastLoginTime: string,
-}
+// type Users = {
+//     _id: string,
+//     userName: string,
+//     deptId: [],
+//     state: number,
+//     role: number,
+//     roleList: [],
+//     createTime: string,
+//     lastLoginTime: string
+// }
 
 const dataSource = ref()
 const approve_status = [
-  { status: '未审批', color: 'volcano' },
-  { status: '已审批', color: 'green' },
-  { status: '已驳回', color: 'red' }
+  { status: '待审批', color: 'volcano' },
+  { status: '在职', color: 'green' },
+  { status: '离职', color: 'red' }
 ]
 const getUsersAll = async () => {
-  await api.usersAll().then((res: any) => {
-    console.log('usersAll=>', res)
-    if (res) {
-      dataSource.value = res
-    }
+  await api.usersAll().then((res)=>{
+    dataSource.value = res
   })
 }
-const mark_leave = (()=>{
+
+// 标记入职
+const mark_leave = (async (_id:string)=>{
+  await api.markLeave({_id:_id}).then((res: any) => {
+    message.info(res)
+    getUsersAll()
+  })
+
+})
+// 标记离职
+const mark_entry = (async (_id:string)=>{
+  await api.markEntry({_id:_id}).then((res: any) => {
+    if (res) {
+      dataSource.value = res
+      getUsersAll()
+    }
+  })
 
 })
 
@@ -102,6 +109,7 @@ const columns = [
     ],
     onFilter: (value: string, record: any) => {
       console.log("value=>",value)
+      console.log("record=>",record)
     },
   },
   {

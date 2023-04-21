@@ -77,10 +77,8 @@ const getLeaveOfAbsenceAll = async () => {
 }
 const handleAdd = async () => {
   addForm.value.createTime = new Date().toLocaleString('chinese', { hour12: false })
-  console.log('createTime=>', addForm.value.createTime)
   addForm.value.leaveDate[0] = new Date(addForm.value.leaveDate[0]).toISOString().slice(0, 10)
   addForm.value.leaveDate[1] = new Date(addForm.value.leaveDate[1]).toISOString().slice(0, 10)
-  console.log('date=>', addForm.value.leaveDate[0])
   await api.addleaveOfAbsence(addForm.value).then((res) => {
     message.info(`${res}`)
   })
