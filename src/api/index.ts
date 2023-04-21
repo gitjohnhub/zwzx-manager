@@ -94,6 +94,15 @@ export default {
       '/helpDeskContact/add',
       params,
     )},
+  phoneConsultation(){
+    return GET(
+      '/phoneConsultation/all',
+    )},
+  addPhoneConsultation(params:any){
+    return POST(
+      '/phoneConsultation/add',
+      params,
+    )},
   //十部门综合窗口管理
   generalWindowContact(){
     return GET(

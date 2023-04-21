@@ -26,7 +26,7 @@ const routes = [
           title:'遗失物品',
           requiresAuth: true,
         },
-        component:()=>import('@/views/LostFoundView.vue'),
+        component:()=>import('@/views/HelpDesk/LostFoundView.vue'),
       },
       {
         name:'leaveOfAbsence',
@@ -82,6 +82,16 @@ const routes = [
         },
         component:()=>import('@/views/HelpDesk/HelpDeskContactView.vue'),
       },
+      {
+        name:'PhoneConsultationView',
+        path:'/PhoneConsultationView',
+        meta:{
+          title:'服务台电话咨询',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/HelpDesk/PhoneConsultationView.vue'),
+      },
+
     ]
   },
   {

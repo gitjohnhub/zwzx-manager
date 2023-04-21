@@ -15,12 +15,16 @@
           大厅管理
         </template>
         <a-sub-menu key="13" title="服务台">
+          <RouterLink to="/PhoneConsultationView">
+            <a-menu-item key="18">电话咨询登记</a-menu-item>
+          </RouterLink>
           <RouterLink to="/lostAndFound">
-            <a-menu-item key="1">遗失物品管理</a-menu-item>
+            <a-menu-item key="19">遗失物品管理</a-menu-item>
           </RouterLink>
           <RouterLink to="/HelpDeskContact">
             <a-menu-item key="17">联系电话</a-menu-item>
           </RouterLink>
+
 
         </a-sub-menu>
         <a-sub-menu key="14" title="十部门综窗">
