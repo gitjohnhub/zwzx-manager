@@ -91,6 +91,16 @@ const routes = [
         },
         component:()=>import('@/views/HelpDesk/PhoneConsultationView.vue'),
       },
+      {
+        name:'statistics',
+        path:'/statistics',
+        meta:{
+          title:'统计模块',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/Management/StatisticsView.vue'),
+      },
+
 
     ]
   },

@@ -5,7 +5,7 @@
       <template #title>{{ new Date(leaveData.createTime).toISOString().slice(0,10) }}</template>
       <template #description>
         <p>
-          <span>您已提交{{ leaveData.leaveType }}申请</span>
+          <span>{{leaveData.userName}}已提交{{ leaveData.leaveType }}申请</span>
         </p>
         <p>
           {{
