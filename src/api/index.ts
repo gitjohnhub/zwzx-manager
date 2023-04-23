@@ -138,4 +138,18 @@ export default {
       params,
     )
   },
+  //数据管理
+  //遗失物品分类统计
+  LostFoundStatData(){
+    return GET(
+      '/lostFound/statistics',
+    )
+  },
+  //电话分部门统计
+  phoneConsultationStatData_By_dept(){
+    return GET(
+      '/phoneConsultation/stat_by_dept',
+    )
+  }
+
 }

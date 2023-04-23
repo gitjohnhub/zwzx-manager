@@ -3,7 +3,7 @@ import storage from '@/utils/storage'
 export const useUserStore = defineStore('user', {
   state: () => ({
     userInfo: storage.getItem('userInfo') ?? "",
-    lostFound_all:""
+    // lostFound_all:"",
   }),
   actions:{
     saveUserInfo(userInfo:any){
