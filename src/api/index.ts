@@ -100,9 +100,10 @@ export default {
       '/helpDeskContact/add',
       params,
     )},
-  phoneConsultation(){
+  phoneConsultation(params:any){
     return GET(
       '/phoneConsultation/all',
+      params
     )},
   addPhoneConsultation(params:any){
     return POST(
@@ -149,6 +150,12 @@ export default {
   phoneConsultationStatData_By_dept(){
     return GET(
       '/phoneConsultation/stat_by_dept',
+    )
+  },
+  //用户离职在职数量统计
+  user_stat_by_state(){
+    return GET(
+      '/users/user_stat_by_state'
     )
   }
 

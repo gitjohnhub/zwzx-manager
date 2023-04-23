@@ -35,7 +35,7 @@
 
   <!-- table -->
 
-  <a-table :columns="columns" :data-source="dataSource">
+  <a-table :columns="columns" :data-source="dataSource" :pagination="false">
     <template #headerCell="{ column }">
       <template v-if="column.key === 'dept'">
         <span style="color: #1890ff">所属部门</span>
@@ -100,6 +100,16 @@
         </span>
       </template>
     </template>
+    <template #footer>
+    <a-pagination
+      :total="pager.total"
+      :current="pager.pageNum"
+      :pageSize="pager.pageSize"
+      @change="changePage"
+    />
+  </template>
+
+
   </a-table>
 </template>
 
@@ -132,21 +142,11 @@ const dataSource = ref()
   createTime:Date.now() + 8 * 60 * 60 * 1000,
   userName: userInfo.userName
 })
-// watch(()=>addForm.value.dept,()=>{
-//   console.log('dept=>',addForm.value.dept)
-//   getItemFromDepts(addForm.value.dept)
-// })
-
-// const getItemFromDepts = ((dept:string)=>{
-//   for (let value of depts){
-//     if (value.dept == dept){
-//       options.value =  value.item
-//       console.log('options=>',options.value)
-//     }else{
-//       options.value =  []
-//     }
-//   }
-// })
+const pager = ref({
+  pageNum:1,
+  pageSize:10,
+  total:0
+})
 const options = ['企业变更', '企业新办', '食品', '酒类','停车预约', '办理地址','新办税务']
 const depts = [
   {
@@ -194,24 +194,25 @@ const depts = [
 
 type AddForm = {
   dept: String
-
   item: Array<String>
-
   result: String
-
   createTime: Number
-
   note: String
-
   userName: String
 }
 
-
+const changePage=(page:any)=>{
+  pager.value.pageNum = page
+  console.log(pager.value.pageNum)
+  getData()
+}
 const getData = async () => {
-  await api.phoneConsultation().then((res: any) => {
-    console.log('generalWindowContact=>', res)
-
-    dataSource.value = res
+  await api.phoneConsultation(pager.value).then((res: any) => {
+    console.log('phoneConsultation=>', res)
+    pager.value.pageNum = res.page.pageNum
+    pager.value.pageSize = res.page.pageSize
+    pager.value.total = res.page.total
+    dataSource.value = res.list
   })
 }
 

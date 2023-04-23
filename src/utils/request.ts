@@ -85,9 +85,10 @@ export const POST =  (url:string,data:any,options:RequestOptions ={})=>{
     ...options
   })
 }
-export const GET =  (url:string,options:RequestOptions ={})=>{
+export const GET =  (url:string,data:any,options:RequestOptions ={})=>{
   return request({
     url,
+    data,
     method:'get',
     ...options
   })
