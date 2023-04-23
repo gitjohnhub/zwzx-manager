@@ -3,7 +3,7 @@
       <!-- <div class="title">登录页面</div> -->
       <a-form :model="user" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-form-item label="用户名：">
-          <a-input type="text" v-model:value="user.userName"></a-input>
+          <a-input type="text" v-model:value="user.userAccount"></a-input>
         </a-form-item>
         <a-form-item label="密码：">
           <a-input type="password" v-model:value="user.userPwd"></a-input>
@@ -27,12 +27,13 @@ import { message } from 'ant-design-vue';
 const router = useRouter()
 const userStore = useUserStore()
 const user =ref({
-  userName:'',
+  userAccount:'',
   userPwd:''
 })
 
 const login = (()=>{
   api.login(user.value).then((res:any)=>{
+    console.log('userInfores=>',res)
     userStore.saveUserInfo(res)
     router.push('welcome')
   })

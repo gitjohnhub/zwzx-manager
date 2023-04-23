@@ -19,6 +19,12 @@ export default {
       params,
     )
   },
+  updateUser(params:any){
+    return POST(
+      '/users/update',
+      params,
+    )
+  },
   usersAll(){
     return GET(
       '/users/all',

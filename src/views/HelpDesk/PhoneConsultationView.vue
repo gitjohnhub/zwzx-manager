@@ -129,7 +129,7 @@ const dataSource = ref()
   item: [],
   result: '已告知电话',
   note: '',
-  createTime: '',
+  createTime:Date.now() + 8 * 60 * 60 * 1000,
   userName: userInfo.userName
 })
 // watch(()=>addForm.value.dept,()=>{
@@ -148,7 +148,6 @@ const dataSource = ref()
 //   }
 // })
 const options = ['企业变更', '企业新办', '食品', '酒类','停车预约', '办理地址','新办税务']
-const deptss = ['市场监督管理局', '政务服务中心', '税务局', '房管局','数字证书', '卫建委','其他']
 const depts = [
   {
     dept: '市场监督管理局',
@@ -200,7 +199,7 @@ type AddForm = {
 
   result: String
 
-  createTime: String
+  createTime: Number
 
   note: String
 
@@ -217,7 +216,7 @@ const getData = async () => {
 }
 
 const handleAdd = async () => {
-  addForm.value.createTime = new Date().toISOString()
+  addForm.value.createTime = Date.now() + 8 * 60 * 60 * 1000
   await api.addPhoneConsultation(addForm.value).then((res) => {
     message.info(`${res}`)
   })
