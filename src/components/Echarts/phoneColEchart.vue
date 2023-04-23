@@ -1,16 +1,16 @@
 <template>
-  <div class="echarts-box">
-    <div id="main" :style="{ width: '500px', height: '500px' }"></div>
-  </div>
+  <a-card title="电话咨询分类">
+    <div id="phoneConsultationStatData_By_dept" :style="{ width: '500px', height: '500px' }"></div>
+  </a-card>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue'
 import * as echarts from 'echarts'
-watch(()=>props.lostFound_pie_data, (newValue) => {
+watch(()=>props.data, (newValue) => {
   console.log('refresh',newValue)
   initChart(newValue)
 })
-const props = defineProps(['lostFound_pie_data'])
+const props = defineProps(['data'])
 // 基础配置一下Echarts
 const myChart = ref()
 function initChart(data:any) {
@@ -28,7 +28,7 @@ function initChart(data:any) {
     })
 }
 onMounted(() => {
-  myChart.value = echarts.init(document.getElementById('main') as HTMLElement)
+  myChart.value = echarts.init(document.getElementById('phoneConsultationStatData_By_dept') as HTMLElement)
   initChart([{xAxias:'test',data:1}])
 })
 </script>

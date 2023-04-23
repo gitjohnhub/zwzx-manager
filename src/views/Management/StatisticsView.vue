@@ -1,17 +1,16 @@
 <template>
-  <!-- <a-button @click="refresh()">刷新</a-button> -->
-  <a-card title="中心遗失物品">
-    <EchartView v-model:lostFound_pie_data="lostFound_pie_data" />
-  </a-card>
+    <EchartView :lostFound_pie_data="lostFound_pie_data" />
+    <phoneColEchart :data="phoneConsultationStatData_By_dept" />
 </template>
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue'
 import api from '@/api/index'
-import EchartView from '@/components/EchartView.vue';
-
+import EchartView from '@/components/Echarts/EchartView.vue';
+import phoneColEchart from '@/components/Echarts/phoneColEchart.vue';
 onBeforeMount(() => {
   console.log('lostFound_pie_data=>mount',lostFound_pie_data.value)
   getLostFoundStatData()
+  getPhoneConsultationStatData_By_dept()
 })
 // const refresh = ()=>{
 //   getLostFoundStatData()
@@ -21,9 +20,14 @@ let lostFound_pie_data = ref({})
 const getLostFoundStatData = async () => {
   await api.LostFoundStatData().then((res: any) => {
     lostFound_pie_data.value = res
-
     console.log('lostFound_pie_data=>', lostFound_pie_data.value)
-
+  })
+}
+let phoneConsultationStatData_By_dept = ref({})
+const getPhoneConsultationStatData_By_dept = async () => {
+  await api.phoneConsultationStatData_By_dept().then((res: any) => {
+    phoneConsultationStatData_By_dept.value = res
+    console.log('phoneConsultationStatData_By_dept=>', phoneConsultationStatData_By_dept.value)
   })
 }
 // const getPhoneConsultationStatData_By_dept = async () => {
