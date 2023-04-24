@@ -100,6 +100,15 @@ const routes = [
         },
         component:()=>import('@/views/Management/StatisticsView.vue'),
       },
+      {
+        name:'onlineHelpMe',
+        path:'/onlineHelpMe',
+        meta:{
+          title:'统计模块',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/OnlineHelp/OnlineHelpMeView.vue'),
+      },
 
 
     ]

@@ -24,9 +24,19 @@
           <RouterLink to="/HelpDeskContact">
             <a-menu-item key="17">联系电话</a-menu-item>
           </RouterLink>
-
-
         </a-sub-menu>
+
+        <a-sub-menu key="17" title="线上帮办/12345">
+          <!-- <RouterLink to="/onlineHelpMe" v-if="userInfo.roleList.includes('线上帮办')"> -->
+          <RouterLink to="/onlineHelpMe" >
+            <a-menu-item key="21">线上帮办</a-menu-item>
+          </RouterLink>
+          <RouterLink to="/lostAndFound" v-if="userInfo.roleList.includes('线上帮办')">
+            <a-menu-item key="22">12345</a-menu-item>
+          </RouterLink>
+        </a-sub-menu>
+
+
         <a-sub-menu key="14" title="十部门综窗" v-if="userInfo.roleList.includes('十部门综合窗口')">
           <RouterLink to="/ReceiveCertificate">
             <a-menu-item key="15">民政领证登记表</a-menu-item>
