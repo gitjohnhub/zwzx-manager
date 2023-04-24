@@ -81,7 +81,7 @@
   </a-row>
 </template>
 <script lang="ts" setup>
-import { computed, ref, onBeforeMount,watch } from 'vue'
+import { ref, onBeforeMount,watch } from 'vue'
 import api from '@/api'
 import { useUserStore } from '@/stores';
 import type { FormInstance } from 'ant-design-vue';
@@ -212,7 +212,6 @@ const columns = [
     dataIndex: 'operation'
   }
 ]
-const count = computed(() => dataSource.value.length)
 
 const onConfirmHasDraw = async (key: string,confirmer:string) => {
   await api.confirmLostFound({_id:key,confirmer:confirmer}).then(()=>{

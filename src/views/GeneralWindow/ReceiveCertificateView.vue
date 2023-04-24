@@ -28,7 +28,7 @@
   </a-row>
   <a-row>
     <a-col :span="24">
-      <a-table bordered :data-source="dataSource" :columns="columns">
+      <a-table bordered :data-source="dataSource" :columns="columns" :pagination="false">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'hasDraw'">
             {{ record.hasDraw ? '已领取' :'未领取' }}
@@ -46,6 +46,13 @@
             </a-popconfirm>
           </template>
         </template>
+        <template #footer>
+    <a-pagination
+      :total="pager.total"
+      :current="pager.pageNum"
+      :pageSize="pager.pageSize"
+      @change="changePage"
+    /></template>
       </a-table>
     </a-col>
   </a-row>
@@ -58,6 +65,16 @@ import type { FormInstance } from 'ant-design-vue';
 import { message } from 'ant-design-vue';
 // import { cloneDeep } from 'lodash-es';
 const userInfo = useUserStore().userInfo
+const pager = ref({
+  pageNum:1,
+  pageSize:10,
+  total:0
+})
+const changePage=(page:any)=>{
+  pager.value.pageNum = page
+  console.log(pager.value.pageNum)
+  getData()
+}
 onBeforeMount(() => {
   getData()
 })
@@ -129,9 +146,12 @@ const columns = [
 
 const dataSource = ref<DataItem[]>([])
 const getData = async () => {
-  await api.receiveCertificate().then((data:any) => {
-    console.log('receiveCertificate=>', data)
-      dataSource.value = data
+  await api.receiveCertificate(pager.value).then((res:any) => {
+    pager.value.pageNum = res.page.pageNum
+    pager.value.pageSize = res.page.pageSize
+    pager.value.total = res.page.total
+    console.log('receiveCertificate=>', res)
+    dataSource.value = res.list
   })
 }
 const onConfirmHasDraw = async (key: string,hasDraw:number,confirmer:string) => {

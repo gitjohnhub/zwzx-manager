@@ -93,10 +93,9 @@ export default {
     })
   },
   //服务台管理
-  helpDeskContact(params:any){
+  helpDeskContact(){
     return GET(
       '/helpDeskContact/all',
-      params
     )},
   addHelpDeskContact(params:any){
     return POST(

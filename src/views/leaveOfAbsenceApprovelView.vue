@@ -1,5 +1,5 @@
 <template>
-  <a-table :columns="columns" :data-source="dataSource">
+  <a-table :columns="columns" :data-source="dataSource"  :pagination="false">
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'approve'">
         <span>
@@ -30,6 +30,13 @@
         </span>
       </template>
     </template>
+    <template #footer>
+    <a-pagination
+      :total="pager.total"
+      :current="pager.pageNum"
+      :pageSize="pager.pageSize"
+      @change="changePage"
+    /></template>
   </a-table>
 </template>
 <script lang="ts" setup>
@@ -38,9 +45,20 @@ import api from '@/api'
 import { useUserStore } from '@/stores'
 import { message } from 'ant-design-vue'
 // import { cloneDeep } from 'lodash-es';
+const pager = ref({
+  pageNum:1,
+  pageSize:10,
+  total:0
+})
+const changePage=(page:any)=>{
+  pager.value.pageNum = page
+  console.log('changePage=>', page)
+  getData()
+}
 onBeforeMount(() => {
-  getLeaveOfAbsenceAll()
-  console.log('approvedatasource=>', dataSource)
+  getData()
+  console.log(pager.value.pageNum)
+  console.log('mountleaveAbsenceGet=>', dataSource.value)
 })
 const userStore = useUserStore()
 const dataSource = ref()
@@ -49,12 +67,14 @@ const approve_status = [
   { status: '已审批', color: 'green' },
   { status: '已驳回', color: 'red' }
 ]
-const getLeaveOfAbsenceAll = async () => {
-  await api.leaveOfAbsenceAll({ userName: userStore.userInfo.userName }).then((res: any) => {
-    console.log('leaveAbsence=>', res)
-    if (res) {
-      dataSource.value = res
-    }
+const getData = async () => {
+  await api.leaveOfAbsenceAll(pager.value).then((res: any) => {
+    pager.value.pageNum = res.page.pageNum
+    pager.value.pageSize = res.page.pageSize
+    pager.value.total = res.page.total
+    console.log('leaveAbsenceGet=>', res)
+    dataSource.value = res.list
+
   })
 }
 const approveLeaveOfAbsence = async (id: string, approveId: number) => {
@@ -67,7 +87,7 @@ const approveLeaveOfAbsence = async (id: string, approveId: number) => {
     .then(() => {
       message.info('审批完成')
     })
-  getLeaveOfAbsenceAll()
+  getData()
 }
 const columns = [
   {
