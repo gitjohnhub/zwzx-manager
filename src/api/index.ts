@@ -41,10 +41,9 @@ export default {
       params,
     )
   },
-  noticeCount(params:any){
+  noticeCount(){
     return GET(
       '/leaveOfAbsence/count',
-      params
     )}
   ,
   // 遗失物品管理
@@ -154,6 +153,13 @@ export default {
   phoneConsultationStatData_By_dept(){
     return GET(
       '/phoneConsultation/stat_by_dept',
+    )
+  },
+  //电话按照时间按分类统计
+  phone_stat_byuser_curmonth(params:any){
+    return GET(
+      '/phoneConsultation//phone_stat_byuser_curmonth',
+      params
     )
   },
   //用户离职在职数量统计

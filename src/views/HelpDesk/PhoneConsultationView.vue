@@ -28,7 +28,7 @@
 
     <a-form-item >
       <a-button type="primary" block @click="handleAdd" :disabled="addForm.item.length === 0">
-        增加联系部门
+        增加记录
       </a-button>
     </a-form-item>
   </a-form>

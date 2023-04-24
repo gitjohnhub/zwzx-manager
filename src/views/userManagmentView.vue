@@ -16,14 +16,14 @@
       </template>
       <template v-if="column.key === 'state'">
         <span>
-          <a-tag>
+          <a-tag  :color="approve_status[record.state].color">
             {{ approve_status[record.state].status }}
           </a-tag>
         </span>
       </template>
       <template v-if="column.key === 'roleList'">
         <span>
-          <a-tag v-for="role in record.roleList" :key="role">
+          <a-tag v-for="role in record.roleList" :key="role" color="#108ee9">
             {{ role }}
           </a-tag>
         </span>
@@ -112,7 +112,7 @@ const dataSource = ref<Users>()
 const roleOptions = ['admin','ems','服务台','十部门综合窗口']
 const approve_status = [
   { status: '待审批', color: 'volcano' },
-  { status: '在职', color: 'green' },
+  { status: '在职', color: '#87d068' },
   { status: '离职', color: 'red' }
 ]
 const getUsersAll = async () => {
@@ -211,18 +211,18 @@ const columns = [
     dataIndex: 'roleList',
     key: 'roleList'
   },
+  // {
+  //   title: '是否同意',
+  //   dataIndex: 'approve',
+  //   key: 'approve'
+  // },
+  // {
+  //   title: '审批人',
+  //   key: 'approveby',
+  //   dataIndex: 'approveby'
+  // },
   {
-    title: '是否同意',
-    dataIndex: 'approve',
-    key: 'approve'
-  },
-  {
-    title: '审批人',
-    key: 'approveby',
-    dataIndex: 'approveby'
-  },
-  {
-    title: 'Action',
+    title: '入/离职',
     key: 'action'
   }
 ]

@@ -1,18 +1,28 @@
 <template>
-    <EchartView :lostFound_pie_data="lostFound_pie_data" />
-    <phoneColEchart :data="phoneConsultationStatData_By_dept" />
-    <userStateEchart :data="user_stat_by_state" />
+  <a-range-picker v-model:value="datePicker" @openChange="dateChange()" />
+  <a-row :gutter="[16, 16]">
+    <a-col :span="12">
+      <phoneByUserView :data="phone_stat_byuser_curmonth" />
+      <EchartView :lostFound_pie_data="lostFound_pie_data" />
+    </a-col>
+    <a-col :span="12">
+      <phoneColEchart :data="phoneConsultationStatData_By_dept" />
+     <userStateEchart :data="user_stat_by_state" />
+    </a-col>
+  </a-row>
 </template>
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue'
 import api from '@/api/index'
-import EchartView from '@/components/Echarts/EchartView.vue';
-import phoneColEchart from '@/components/Echarts/phoneColEchart.vue';
+import EchartView from '@/components/Echarts/EchartView.vue'
+import phoneColEchart from '@/components/Echarts/phoneColEchart.vue'
 import userStateEchart from '@/components/Echarts/userStateEchart.vue'
+import phoneByUserView from '@/components/Echarts/phoneByUserView.vue'
 onBeforeMount(() => {
   getLostFoundStatData()
   getPhoneConsultationStatData_By_dept()
   getUser_stat_by_state()
+  getPhone_stat_byuser_curmonth()
 })
 const lostFound_pie_data = ref({})
 const getLostFoundStatData = async () => {
@@ -33,6 +43,20 @@ const getUser_stat_by_state = async () => {
     console.log(res)
   })
 }
+const dateChange = () => {
+  getPhone_stat_byuser_curmonth()
+}
+const phone_stat_byuser_curmonth = ref({})
+const datePicker = ref([])
+const getPhone_stat_byuser_curmonth = async () => {
+  await api
+    .phone_stat_byuser_curmonth({ startDate: datePicker.value[0], endDate: datePicker.value[1] })
+    .then((res: any) => {
+      phone_stat_byuser_curmonth.value = res
+      console.log('phone_stat_byuser_curmonth=>', res)
+    })
+}
+
 // const getPhoneConsultationStatData_By_dept = async () => {
 //   await api.phoneConsultationStatData_By_dept().then((res: any) => {
 //     console.log(res)

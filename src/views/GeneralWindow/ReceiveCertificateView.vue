@@ -30,11 +30,14 @@
     <a-col :span="24">
       <a-table bordered :data-source="dataSource" :columns="columns" :pagination="false">
         <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'createTime'">
+            {{ record.createTime ? record.createTime.slice(0,10) :'' }}
+          </template>
           <template v-if="column.dataIndex === 'hasDraw'">
             {{ record.hasDraw ? '已领取' :'未领取' }}
           </template>
           <template v-if="column.dataIndex === 'drawDate'">
-            {{ record.drawDate ? record.drawDate.slice(0,10) :'' }}
+            {{ record.drawDate ? record.drawDate :'' }}
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <a-popconfirm
