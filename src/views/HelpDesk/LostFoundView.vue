@@ -43,14 +43,14 @@
           >
             重置
           </a-button>
-          <a-badge :count="count" :overflow-count="999" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
+          <a-badge :count="pager.total" :overflow-count="999" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
         </a-form-item>
       </a-form>
     </a-col>
   </a-row>
   <a-row>
     <a-col :span="24">
-      <a-table bordered :data-source="dataSource" :columns="columns">
+      <a-table bordered :data-source="dataSource" :columns="columns" :pagination="false">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'hasDraw'">
             {{ record.hasDraw ? '已领取' :'未领取' }}
@@ -67,7 +67,15 @@
               <a-button type="primary">已领取</a-button>
             </a-popconfirm>
           </template>
+
         </template>
+        <template #footer>
+    <a-pagination
+      :total="pager.total"
+      :current="pager.pageNum"
+      :pageSize="pager.pageSize"
+      @change="changePage"
+    /></template>
       </a-table>
     </a-col>
   </a-row>
@@ -79,9 +87,18 @@ import { useUserStore } from '@/stores';
 import type { FormInstance } from 'ant-design-vue';
 import { message } from 'ant-design-vue';
 // import { cloneDeep } from 'lodash-es';
-
+const pager = ref({
+  pageNum:1,
+  pageSize:10,
+  total:0
+})
+const changePage=(page:any)=>{
+  pager.value.pageNum = page
+  console.log(pager.value.pageNum)
+  getData()
+}
 onBeforeMount(() => {
-  getLostFoundAll()
+  getData()
 })
 const userStore = useUserStore()
 const formRef = ref<FormInstance>()
@@ -109,11 +126,14 @@ const resetForm = () => {
   searchText.value = ""
 }
 const dataSource = ref<DataItem[]>([])
-const getLostFoundAll = async () => {
-  await api.lostFoundAll().then((data:any) => {
+const getData = async () => {
+  await api.lostFoundAll(pager.value).then((res:any) => {
+    pager.value.pageNum = res.page.pageNum
+    pager.value.pageSize = res.page.pageSize
+    pager.value.total = res.page.total
     resetForm()
-    console.log('lostFound=>', data)
-      dataSource.value = data
+    console.log('lostFound=>', res)
+      dataSource.value = res.list
   })
 }
 interface DataItem {
@@ -141,7 +161,7 @@ watch(searchText,()=>{
   if (searchText.value != ''){
     searchData()
   }else{
-    getLostFoundAll()
+    getData()
   }
 
 })
@@ -150,7 +170,7 @@ const onSearch = () => {
   if (searchText.value != ""){
     searchData()
   }else{
-    getLostFoundAll()
+    getData()
   }
 
 }
@@ -197,14 +217,14 @@ const count = computed(() => dataSource.value.length)
 const onConfirmHasDraw = async (key: string,confirmer:string) => {
   await api.confirmLostFound({_id:key,confirmer:confirmer}).then(()=>{
     message.info('确认成功')
-    getLostFoundAll()
+    getData()
   }
     )
 }
 const handleAdd = async () => {
   await api.addLostFound(addForm.value).then(()=>{
     message.info('添加成功')
-    getLostFoundAll()
+    getData()
   })
 }
 </script>

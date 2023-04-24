@@ -41,15 +41,17 @@ export default {
       params,
     )
   },
-  noticeCount(){
+  noticeCount(params:any){
     return GET(
       '/leaveOfAbsence/count',
+      params
     )}
   ,
   // 遗失物品管理
-  lostFoundAll(){
+  lostFoundAll(params:any){
     return GET(
       '/lostFound/all',
+      params,
     )}
   ,
   addLostFound(params:any){
@@ -91,9 +93,10 @@ export default {
     })
   },
   //服务台管理
-  helpDeskContact(){
+  helpDeskContact(params:any){
     return GET(
       '/helpDeskContact/all',
+      params
     )},
   addHelpDeskContact(params:any){
     return POST(
@@ -111,9 +114,10 @@ export default {
       params,
     )},
   //十部门综合窗口管理
-  generalWindowContact(){
+  generalWindowContact(params:any){
     return GET(
       '/generalWindowContact/all',
+      params
     )}
   ,
   addGeneralWindowContact(params:any){
@@ -122,9 +126,10 @@ export default {
       params,
     )
   },
-  receiveCertificate(){
+  receiveCertificate(params:any){
     return GET(
       '/receiveCertificate/all',
+      params
     )
   },
   addReceiveCertificate(params:any){

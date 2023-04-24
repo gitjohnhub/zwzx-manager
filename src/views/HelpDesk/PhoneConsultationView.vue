@@ -108,8 +108,6 @@
       @change="changePage"
     />
   </template>
-
-
   </a-table>
 </template>
 
