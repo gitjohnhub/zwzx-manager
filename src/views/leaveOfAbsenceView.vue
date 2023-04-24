@@ -67,11 +67,12 @@ const addForm = ref<AddForm>({
   createTime: '',
   userName: userStore.userInfo.userName
 })
+
 const getLeaveOfAbsenceAll = async () => {
-  await api.leaveOfAbsenceAll({ userName: userStore.userInfo.userName }).then((res: any) => {
+  await api.leaveOfAbsenceAll({userName:addForm.value.userName}).then((res: any) => {
     console.log('leaveAbsence=>', res)
     if (res) {
-      dataSource.value = res
+      dataSource.value = res.list
     }
   })
 }

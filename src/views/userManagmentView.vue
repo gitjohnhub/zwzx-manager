@@ -157,6 +157,7 @@ const handleOk = async () => {
   console.log(editForm.value)
   await api.updateUser(editForm.value).then(()=>{
     visible.value = false
+    message.info('提交成功')
     confirmLoading.value = false
     getUsersAll()
   }

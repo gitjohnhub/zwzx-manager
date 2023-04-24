@@ -68,7 +68,7 @@ export default {
   },
   // 请假管理
   leaveOfAbsenceAll(params:any){
-    return POST(
+    return GET(
       '/leaveOfAbsence/all',
       params,
     )
