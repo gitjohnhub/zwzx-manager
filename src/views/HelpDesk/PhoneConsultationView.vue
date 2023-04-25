@@ -34,6 +34,7 @@
   </a-form>
 
   <!-- table -->
+  <a-divider ></a-divider>
 
   <a-table :columns="columns" :data-source="dataSource" :pagination="false">
     <template #headerCell="{ column }">
