@@ -9,11 +9,11 @@
       </a-select>
     </a-form-item >
     <a-form-item label="事项">
-      <a-checkbox-group v-model:value="addForm.item" :options="options" />
+      <a-checkbox-group v-model:value="addForm.item" :options="itemTypes" />
     </a-form-item>
     <a-form-item label="结果">
       <a-select ref="select" v-model:value="addForm.result">
-        <a-select-option v-for="value in ['已告知电话','已转接']" :value="value" :key="value">{{
+        <a-select-option v-for="value in results" :value="value" :key="value">{{
           value
         }}</a-select-option>
       </a-select>
@@ -131,12 +131,14 @@ onBeforeMount(() => {
 
 const formRef = ref<FormInstance>()
 const userInfo = useUserStore().userInfo
+const itemTypes = ['企业变更', '企业新办', '企业迁入','特种设备','食品', '酒类','停车预约', '新办税务','公共卫生']
+const results = ['已告知电话','已转接','已处理']
 const dataSource = ref()
 // const options = ref<Array<string>>(['企业变更', '企业新办', '食品', '酒类'])
   const addForm = ref<AddForm>({
-  dept: '市场监督管理局',
+  dept: itemTypes[0],
   item: [],
-  result: '已告知电话',
+  result: results[0],
   note: '',
   createTime:Date.now() + 8 * 60 * 60 * 1000,
   userName: userInfo.userName
@@ -146,7 +148,7 @@ const pager = ref({
   pageSize:10,
   total:0
 })
-const options = ['企业变更', '企业新办', '企业迁入','特种设备','食品', '酒类','停车预约', '新办税务','公共卫生']
+
 const depts = [
   {
     dept: '市场监督管理局',
@@ -244,7 +246,7 @@ const columns = columns_original.map((item) => {
       key: item.key,
       dataIndex: item.key,
       title: item.title,
-      filters: options.map((option) => {
+      filters: itemTypes.map((option) => {
         return { text: option, value: option }
       }),
       onFilter: (value: string, record: any) =>{
