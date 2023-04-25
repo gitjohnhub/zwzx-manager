@@ -4,7 +4,7 @@
       <a-form layout="inline" :model="addForm" ref="formRef" name="addForm">
         <a-form-item> 拾到日期:<a-date-picker v-model:value="addForm.pickUpDate" /> </a-form-item>
         <a-form-item>
-          <a-select ref="select" v-model:value="addForm.itemType" style="width: 80px">
+          <a-select ref="select" v-model:value="addForm.itemType" >
             <a-select-option value="身份证">身份证</a-select-option>
             <a-select-option value="公章">公章</a-select-option>
             <a-select-option value="ID卡">ID卡</a-select-option>
@@ -14,7 +14,7 @@
           </a-select>
         </a-form-item>
         <a-form-item>
-          <a-input v-model:value="addForm.withName" placeholder="姓名" style="width: 80px"> </a-input>
+          <a-input v-model:value="addForm.withName" placeholder="姓名/公司名称"> </a-input>
         </a-form-item>
         <a-form-item>
           <a-input v-model:value="addForm.IdNum" placeholder="身份证/银行卡号码"> </a-input>
@@ -104,7 +104,7 @@ const userStore = useUserStore()
 const formRef = ref<FormInstance>()
 const addForm = ref({
   pickUpDate: '',
-  itemType: '',
+  itemType: '公章',
   withName: '',
   IdNum: '',
   hasDraw: 0,
@@ -116,7 +116,7 @@ const addForm = ref({
 const resetForm = () => {
   console.log('reset')
   addForm.value.pickUpDate =  ''
-  addForm.value.itemType =  ''
+  addForm.value.itemType =  '公章'
   addForm.value.withName =  ''
   addForm.value.IdNum =  ''
   addForm.value.hasDraw =  0
