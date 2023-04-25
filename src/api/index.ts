@@ -142,6 +142,19 @@ export default {
       params,
     )
   },
+  //12345热线
+  onlineHelpAll(params:any){
+    return GET(
+      '/onlineHelp/all',
+      params
+    )},
+  addOnlineHelp(params:any){
+      return POST(
+        '/onlineHelp/add',
+        params,
+      )
+    },
+
   //数据管理
   //遗失物品分类统计
   LostFoundStatData(){
