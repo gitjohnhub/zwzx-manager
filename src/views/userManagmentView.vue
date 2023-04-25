@@ -109,7 +109,7 @@ type Users =
     }
   | {}
 const dataSource = ref<Users>()
-const roleOptions = ['admin','ems','服务台','十部门综合窗口']
+const roleOptions = ['admin','ems','服务台','十部门综合窗口','线上帮办']
 const approve_status = [
   { status: '待审批', color: 'volcano' },
   { status: '在职', color: '#87d068' },

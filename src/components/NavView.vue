@@ -14,11 +14,11 @@
           <AppstoreOutlined />
           大厅管理
         </template>
-        <a-sub-menu key="13" title="服务台">
-          <RouterLink to="/PhoneConsultationView" v-if="userInfo.roleList.includes('服务台')">
+        <a-sub-menu key="13" title="服务台"  v-if="userInfo.roleList.includes('服务台')">
+          <RouterLink to="/PhoneConsultationView">
             <a-menu-item key="18">电话咨询登记</a-menu-item>
           </RouterLink>
-          <RouterLink to="/lostAndFound" v-if="userInfo.roleList.includes('服务台')">
+          <RouterLink to="/lostAndFound">
             <a-menu-item key="19">遗失物品管理</a-menu-item>
           </RouterLink>
           <RouterLink to="/HelpDeskContact">
@@ -26,7 +26,7 @@
           </RouterLink>
         </a-sub-menu>
 
-        <a-sub-menu key="17" title="线上帮办/12345">
+        <a-sub-menu key="17" title="线上帮办/12345"  v-if="userInfo.roleList.includes('线上帮办')"> >
           <!-- <RouterLink to="/onlineHelpMe" v-if="userInfo.roleList.includes('线上帮办')"> -->
           <RouterLink to="/onlineHelpMe" >
             <a-menu-item key="21">线上帮办</a-menu-item>
