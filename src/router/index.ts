@@ -104,10 +104,19 @@ const routes = [
         name:'onlineHelpMe',
         path:'/onlineHelpMe',
         meta:{
-          title:'统计模块',
+          title:'线上帮办',
           requiresAuth: true,
         },
         component:()=>import('@/views/OnlineHelp/OnlineHelpMeView.vue'),
+      },
+      {
+        name:'goodbadReview',
+        path:'/goodbadReview',
+        meta:{
+          title:'好差评12345',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/OnlineHelp/goodbadReviewView.vue'),
       },
 
 

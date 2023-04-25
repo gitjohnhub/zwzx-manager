@@ -1,22 +1,23 @@
 <template>
   <!-- form -->
   <a-form :model="addForm" ref="formRef" name="addForm" layout="inline">
+    <a-form-item label="办件编号">
+      <a-input v-model:value="addForm.numId" placeholder="12345办件编号"> </a-input>
+    </a-form-item>
     <a-form-item label="咨询内容">
       <a-textarea v-model:value="addForm.content" placeholder="描述"> </a-textarea>
     </a-form-item>
     <a-form-item label="姓名">
-      <a-input v-model:value="addForm.name" placeholder="x先生/女士/某某公司"> </a-input>
+      <a-input v-model:value="addForm.name" placeholder="x先生/女士"> </a-input>
     </a-form-item>
-      <a-form-item label="所属部门">
-      <a-select
-        v-model:value="addForm.dept"
-        :options="depts"
-      ></a-select>
+    <a-form-item label="联系方式">
+      <a-input v-model:value="addForm.phoneNum" placeholder="联系方式"> </a-input>
     </a-form-item>
 
     <a-form-item label="所属事项">
       <a-select
         v-model:value="addForm.itemType"
+        style="width: 120px"
         :options="itemTypes"
       ></a-select>
     </a-form-item>
@@ -94,7 +95,7 @@
 
       <template v-if="column.key === 'action'">
         <span>
-          <a-button type="primary" style="inline" @click="confirmReply()">编辑</a-button>
+          <a-button type="primary" style="inline" @click="showModal(record)">确认完结</a-button>
         </span>
       </template>
     </template>
@@ -107,6 +108,24 @@
       />
     </template>
   </a-table>
+
+  <div>
+    <!-- 弹出编辑框 -->
+    <a-modal
+      v-model:visible="visible"
+      title="二次回复内容"
+      :confirm-loading="confirmLoading"
+      @ok="handleOk"
+    >
+      <a-form>
+        <a-form-item label="二次回复内容">
+          <a-textarea v-model:value="addForm.replyContent" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+  </div>
+
+
 </template>
 
 <script lang="ts" setup>
@@ -126,56 +145,53 @@ onBeforeMount(() => {
   getData()
 })
 
+//弹出框编辑用户权限模块
+const confirmReplyForm = ref()
+const modalText = ref<string>('Content of the modal')
+const visible = ref<boolean>(false)
+const confirmLoading = ref<boolean>(false)
+
+const showModal = (record: AddForm) => {
+  confirmReplyForm.value = record
+  console.log('confirmreplyForm=>',confirmReplyForm)
+  visible.value = true
+}
+const handleOk = async () => {
+  modalText.value = 'The modal will be closed after two seconds'
+  confirmLoading.value = true
+  confirmReplyForm.value.replyContent = addForm.value.replyContent
+  confirmReplyForm.value.hasReply = 1
+  await api.updategoodbadReview(confirmReplyForm.value).then(()=>{
+    visible.value = false
+    message.info('提交成功')
+    confirmLoading.value = false
+    getData()
+  }
+  )
+}
+
+
 const formRef = ref<FormInstance>()
 const userInfo = useUserStore().userInfo
 const dataSource = ref()
 // const options = ref<Array<string>>(['企业变更', '企业新办', '食品', '酒类'])
-  type AddForm = {
-  name: String
-  content: String
-  result: String
-  dept:String
-  itemType: String
-  createTime: String
-  recorder: String
-}
-
 const addForm = ref<AddForm>({
+  numId: '',
   name: '',
+  phoneNum: '',
   content: '',
   result: '直接回复',
-  dept:'市场监督管理局',
-  itemType: '企业变更',
+  hasReply: 0,
   recorder: userInfo.userName,
-  createTime: ''
+  itemType: '企业变更',
+  createTime: '',
+  replyContent:'',
 })
 const pager = ref({
   pageNum: 1,
   pageSize: 10,
   total: 0
 })
-const depts = [
-  {
-    value: '市场监督管理局',
-    label: '市场监督管理局'
-  },
-  {
-    value: '卫建委',
-    label: '卫建委'
-  },
-  {
-    value: '税务局',
-    label: '税务局'
-  },
-  {
-    value: '文旅局',
-    label: '文旅局'
-  },
-  {
-    value: '建管委',
-    label: '建管委'
-  }
-]
 const itemTypes = [
   {
     value: '食品/酒类',
@@ -196,14 +212,6 @@ const itemTypes = [
   {
     value: '企业注销',
     label: '企业注销'
-  },
-  {
-    value: '公共卫生许可证',
-    label: '公共卫生许可证'
-  },
-  {
-    value: '税务',
-    label: '税务'
   }
 ]
 const results = [
@@ -216,6 +224,18 @@ const results = [
     label: '直接回复',
   },
 ]
+type AddForm = {
+  numId: String
+  name: String
+  phoneNum: String
+  content: String
+  result: String
+  hasReply: Number
+  itemType: String
+  createTime: String
+  recorder: String,
+  replyContent:String
+}
 
 const changePage = (page: any) => {
   pager.value.pageNum = page
@@ -223,7 +243,7 @@ const changePage = (page: any) => {
   getData()
 }
 const getData = async () => {
-  await api.onlineHelpAll(pager.value).then((res: any) => {
+  await api.goodbadReviewAll(pager.value).then((res: any) => {
     console.log('onlineHelpAll=>', res)
     pager.value.pageNum = res.page.pageNum
     pager.value.pageSize = res.page.pageSize
@@ -234,26 +254,27 @@ const getData = async () => {
 
 const handleAdd = async () => {
   addForm.value.createTime = new Date().toISOString()
-  await api.addOnlineHelp(addForm.value).then((res: any) => {
+  await api.addGoodbadReview(addForm.value).then((res: any) => {
     message.info(`${res}`)
   })
 
   getData()
 }
 
-const confirmReply = () => {
-  message.info('待开发')
-}
 
 const columns_original = [
+  { key: 'numId', title: '12345编号' },
   { key: 'name', title: '咨询姓名' },
+  { key: 'phoneNum', title: '联系方式' },
   { key: 'content', title: '咨询内容' },
   { key: 'itemType', title: '事项类别' },
-  { key: 'dept', title: '所属部门' },
   { key: 'result', title: '咨询结果' },
+  { key: 'hasReply', title: '是否完结' },
+  { key: 'replyContent', title: '回复内容' },
   { key: 'createTime', title: '提交时间' },
   { key: 'recorder', title: '记录人' },
-  // { key: 'action', title: '动作' }
+  { key: 'action', title: '确认完结' }
+
 ]
 
 const columns = columns_original.map((item) => {

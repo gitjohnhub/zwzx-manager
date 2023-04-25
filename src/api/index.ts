@@ -154,6 +154,23 @@ export default {
         params,
       )
     },
+    goodbadReviewAll(params:any){
+      return GET(
+        '/goodbadReview/all',
+        params
+      )},
+    addGoodbadReview(params:any){
+        return POST(
+          '/goodbadReview/add',
+          params,
+        )
+      },
+    updategoodbadReview(params:any){
+        return POST(
+          '/goodbadReview/update',
+          params,
+        )
+      },
 
   //数据管理
   //遗失物品分类统计

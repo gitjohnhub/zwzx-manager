@@ -211,16 +211,6 @@ const columns = [
     dataIndex: 'roleList',
     key: 'roleList'
   },
-  // {
-  //   title: '是否同意',
-  //   dataIndex: 'approve',
-  //   key: 'approve'
-  // },
-  // {
-  //   title: '审批人',
-  //   key: 'approveby',
-  //   dataIndex: 'approveby'
-  // },
   {
     title: '入/离职',
     key: 'action'
