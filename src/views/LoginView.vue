@@ -10,7 +10,7 @@
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
           <a-button type="primary" @click="login">登录</a-button>
-          <a-button  @click="register">注册</a-button>
+          <!-- <a-button  @click="register">注册</a-button> -->
         </a-form-item>
       </a-form>
 
@@ -23,7 +23,6 @@ import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import api from '../api/index'
 import { useUserStore } from '@/stores/index';
-import { message } from 'ant-design-vue';
 const router = useRouter()
 const userStore = useUserStore()
 const user =ref({
@@ -39,12 +38,11 @@ const login = (()=>{
   })
 
 })
-const register = (()=>{
-  api.register(user.value).then((res:any)=>{
-    userStore.saveUserInfo(res)
-    message.info('注册成功')
-  })
-})
+// const register = (()=>{
+//   api.register(user.value).then(()=>{
+//     message.info('注册成功')
+//   })
+// })
 
 </script>
 <style scoped>

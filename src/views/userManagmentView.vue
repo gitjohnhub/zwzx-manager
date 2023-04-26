@@ -1,4 +1,19 @@
 <template>
+  <a-form :model="user" layout="inline">
+        <a-form-item label="登录账号：">
+          <a-input type="text" v-model:value="user.userAccount"></a-input>
+        </a-form-item>
+        <a-form-item label="姓名">
+          <a-input type="text" v-model:value="user.userName"></a-input>
+        </a-form-item>
+        <a-form-item label="密码：">
+          <a-input type="password" v-model:value="user.userPwd"></a-input>
+        </a-form-item>
+        <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
+          <a-button type="primary" @click="register">增加新用户</a-button>
+        </a-form-item>
+      </a-form>
+      <a-divider></a-divider>
   <a-table :columns="columns" :data-source="dataSource">
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'createTime'">
@@ -137,7 +152,18 @@ const mark_entry = async (_id: string) => {
     }
   })
 }
+const user =ref({
+  userAccount:'',
+  userPwd:'',
+  userName:''
+})
 
+const register = (()=>{
+  api.register(user.value).then(()=>{
+    getUsersAll()
+    message.info('注册成功')
+  })
+})
 //弹出框编辑用户权限模块
 const editForm = ref()
 const modalText = ref<string>('Content of the modal')

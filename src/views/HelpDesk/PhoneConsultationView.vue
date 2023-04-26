@@ -131,7 +131,7 @@ onBeforeMount(() => {
 
 const formRef = ref<FormInstance>()
 const userInfo = useUserStore().userInfo
-const itemTypes = ['企业变更', '企业新办', '企业迁入','特种设备','食品', '酒类','停车预约', '新办税务','公共卫生']
+const itemTypes = ['企业变更', '企业新办', '企业迁入','特种设备','食品', '酒类','停车预约', '税务','公共卫生','其他']
 const results = ['已告知电话','已转接','已处理']
 const dataSource = ref()
 // const options = ref<Array<string>>(['企业变更', '企业新办', '食品', '酒类'])
