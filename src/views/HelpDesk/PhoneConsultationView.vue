@@ -136,7 +136,7 @@ const results = ['已告知电话','已转接','已处理']
 const dataSource = ref()
 // const options = ref<Array<string>>(['企业变更', '企业新办', '食品', '酒类'])
   const addForm = ref<AddForm>({
-  dept: itemTypes[0],
+  dept: '市场监督管理局',
   item: [],
   result: results[0],
   note: '',

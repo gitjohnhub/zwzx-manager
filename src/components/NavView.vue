@@ -26,7 +26,7 @@
           </RouterLink>
         </a-sub-menu>
 
-        <a-sub-menu key="17" title="线上帮办/12345"  v-if="userInfo.roleList.includes('线上帮办')"> >
+        <a-sub-menu key="17" title="线上帮办/12345"  v-if="userInfo.roleList.includes('线上帮办')">
           <!-- <RouterLink to="/onlineHelpMe" v-if="userInfo.roleList.includes('线上帮办')"> -->
           <RouterLink to="/onlineHelpMe" >
             <a-menu-item key="21">线上帮办</a-menu-item>
