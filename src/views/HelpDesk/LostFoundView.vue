@@ -62,7 +62,7 @@
             <a-popconfirm
               v-if="dataSource.length"
               title="确认已领取?"
-              @confirm="onConfirmHasDraw(record._id,userStore.userInfo.userName)"
+              @confirm="onConfirmHasDraw(record)"
             >
               <a-button type="primary">已领取</a-button>
             </a-popconfirm>
@@ -86,6 +86,7 @@ import api from '@/api'
 import { useUserStore } from '@/stores';
 import type { FormInstance } from 'ant-design-vue';
 import { message } from 'ant-design-vue';
+import util from '@/utils/util';
 // import { cloneDeep } from 'lodash-es';
 const pager = ref({
   pageNum:1,
@@ -213,9 +214,12 @@ const columns = [
   }
 ]
 
-const onConfirmHasDraw = async (key: string,confirmer:string) => {
-  await api.confirmLostFound({_id:key,confirmer:confirmer}).then(()=>{
+const onConfirmHasDraw = async (record:any) => {
+  await api.confirmLostFound({_id:record._id,confirmer:userStore.userInfo.userNmae}).then(()=>{
     message.info('确认成功')
+    const content = `<html><body><p style='text-align:center;font-size:24px;'>
+    政务中心遗失物领取确认单</p ><p style='font-size:16px;'>本人已领取以下遗失物品:</p><div style='text-align:left;font-size:16px;'><p>遗失时间：${record.pickUpDate.slice(0,10)}</p><p>物品类型:${record.itemType}</p><p>物品归属名称:${record.withName??'无'}</p><p>物品备注：${record.note??'无'}</p><p>领取人（签字）:___________________</p><p >领取人身份证号:___________________</p><p>领取日期：________年________月________日</p></body></html>"`
+    util.downloadFile(content,`${record.pickUpDate.slice(0,10)}${record.withName}失物招领.docx`)
     getData()
   }
     )
