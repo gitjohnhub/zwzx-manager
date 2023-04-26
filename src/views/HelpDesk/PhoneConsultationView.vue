@@ -1,13 +1,13 @@
 <template>
   <!-- form -->
-  <a-form  :model="addForm" ref="formRef" name="addForm">
+  <a-form :model="addForm" ref="formRef" name="addForm">
     <a-form-item label="所属部门">
       <a-select ref="select" v-model:value="addForm.dept">
         <a-select-option v-for="value in depts" :value="value.dept" :key="value">{{
           value.dept
         }}</a-select-option>
       </a-select>
-    </a-form-item >
+    </a-form-item>
     <a-form-item label="事项">
       <a-checkbox-group v-model:value="addForm.item" :options="itemTypes" />
     </a-form-item>
@@ -26,7 +26,7 @@
 
     <!-- Form Button -->
 
-    <a-form-item >
+    <a-form-item>
       <a-button type="primary" block @click="handleAdd" :disabled="addForm.item.length === 0">
         增加记录
       </a-button>
@@ -34,7 +34,7 @@
   </a-form>
 
   <!-- table -->
-  <a-divider ></a-divider>
+  <a-divider></a-divider>
 
   <a-table :columns="columns" :data-source="dataSource" :pagination="false">
     <template #headerCell="{ column }">
@@ -97,19 +97,53 @@
 
       <template v-if="column.key === 'action'">
         <span>
-          <a-button type="primary" style="inline" @click="editColumn()">编辑</a-button>
+          <a-button type="primary" style="inline" @click="editColumn(record)">编辑</a-button>
         </span>
       </template>
     </template>
     <template #footer>
-    <a-pagination
-      :total="pager.total"
-      :current="pager.pageNum"
-      :pageSize="pager.pageSize"
-      @change="changePage"
-    />
-  </template>
+      <a-pagination
+        :total="pager.total"
+        :current="pager.pageNum"
+        :pageSize="pager.pageSize"
+        @change="changePage"
+      />
+    </template>
   </a-table>
+
+  <div>
+    <!-- 弹出编辑框 -->
+    <a-modal
+      v-model:visible="visible"
+      title="编辑"
+      :confirm-loading="confirmLoading"
+      @ok="handleOk"
+    >
+      <a-form :model="editForm">
+        <a-form-item label="所属部门">
+          <a-select ref="select" v-model:value="editForm.dept">
+            <a-select-option v-for="value in depts" :value="value.dept" :key="value">{{
+              value.dept
+            }}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="事项">
+          <a-checkbox-group v-model:value="editForm.item" :options="itemTypes" />
+        </a-form-item>
+        <a-form-item label="结果">
+          <a-select ref="select" v-model:value="editForm.result">
+            <a-select-option v-for="value in results" :value="value" :key="value">{{
+              value
+            }}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <!-- Form文本 -->
+        <a-form-item label="备注">
+          <a-input v-model:value="editForm.note" placeholder="备注"> </a-input>
+        </a-form-item>
+      </a-form>
+    </a-modal>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -131,22 +165,33 @@ onBeforeMount(() => {
 
 const formRef = ref<FormInstance>()
 const userInfo = useUserStore().userInfo
-const itemTypes = ['企业变更', '企业新办', '企业迁入','特种设备','食品', '酒类','停车预约', '税务','公共卫生','其他']
-const results = ['已告知电话','已转接','已处理']
+const itemTypes = [
+  '企业变更',
+  '企业新办',
+  '企业迁入',
+  '特种设备',
+  '食品',
+  '酒类',
+  '停车预约',
+  '税务',
+  '公共卫生',
+  '其他'
+]
+const results = ['已告知电话', '已转接', '已处理']
 const dataSource = ref()
 // const options = ref<Array<string>>(['企业变更', '企业新办', '食品', '酒类'])
-  const addForm = ref<AddForm>({
+const addForm = ref<AddForm>({
   dept: '市场监督管理局',
   item: [],
   result: results[0],
   note: '',
-  createTime:Date.now() + 8 * 60 * 60 * 1000,
+  createTime: Date.now() + 8 * 60 * 60 * 1000,
   userName: userInfo.userName
 })
 const pager = ref({
-  pageNum:1,
-  pageSize:10,
-  total:0
+  pageNum: 1,
+  pageSize: 10,
+  total: 0
 })
 
 const depts = [
@@ -202,7 +247,7 @@ type AddForm = {
   userName: String
 }
 
-const changePage=(page:any)=>{
+const changePage = (page: any) => {
   pager.value.pageNum = page
   console.log(pager.value.pageNum)
   getData()
@@ -225,9 +270,30 @@ const handleAdd = async () => {
 
   getData()
 }
+//弹出框编辑用户权限模块
+const editForm = ref()
+const visible = ref<boolean>(false)
+const confirmLoading = ref<boolean>(false)
 
-const editColumn = () => {
-  message.info('待开发')
+const showModal = (record: AddForm) => {
+  editForm.value = record
+  console.log(editForm)
+  visible.value = true
+}
+
+const handleOk = async () => {
+  confirmLoading.value = true
+  console.log(editForm.value)
+  await api.updatephoneConsultation(editForm.value).then(() => {
+    visible.value = false
+    message.info('提交成功')
+    confirmLoading.value = false
+    getData()
+  })
+}
+
+const editColumn = (record: AddForm) => {
+  showModal(record)
 }
 
 const columns_original = [
@@ -249,7 +315,7 @@ const columns = columns_original.map((item) => {
       filters: itemTypes.map((option) => {
         return { text: option, value: option }
       }),
-      onFilter: (value: string, record: any) =>{
+      onFilter: (value: string, record: any) => {
         return record.item.includes(value)
       },
       onFilterDropdownVisibleChange: (visible: any) => {
