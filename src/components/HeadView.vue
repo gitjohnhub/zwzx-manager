@@ -1,9 +1,9 @@
 <template>
   <a-row class="bread">
     <a-space>
-      <a-badge :count="noticeCount" show-zero>
+      <!-- <a-badge :count="noticeCount" show-zero> -->
       <a-avatar shape="square" size="small" />
-    </a-badge>
+    <!-- </a-badge> -->
     {{ userInfo.userName }}
     <a-button @click="logout">登出</a-button>
 
