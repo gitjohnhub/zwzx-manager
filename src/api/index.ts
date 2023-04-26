@@ -101,6 +101,11 @@ export default {
       '/helpDeskContact/add',
       params,
     )},
+  updateHelpDeskContact(params:any){
+      return POST(
+        '/helpDeskContact/update',
+        params,
+      )},
   phoneConsultation(params:any){
     return GET(
       '/phoneConsultation/all',
@@ -111,6 +116,8 @@ export default {
       '/phoneConsultation/add',
       params,
     )},
+
+
   //十部门综合窗口管理
   generalWindowContact(params:any){
     return GET(

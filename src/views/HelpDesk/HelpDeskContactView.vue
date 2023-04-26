@@ -71,12 +71,41 @@
       </template>
       <template v-if="column.key === 'action'">
         <span>
-          <a-button type="primary" style="inline" @click="editColumn()">编辑</a-button>
+          <a-button type="primary" style="inline" @click="editColumn(record)">编辑</a-button>
         </span>
       </template>
     </template>
   </a-table>
+
+  <div>
+    <!-- 弹出编辑框 -->
+    <a-modal
+      v-model:visible="visible"
+      title="编辑用户"
+      :confirm-loading="confirmLoading"
+      @ok="handleOk"
+    >
+      <a-form :model="editForm">
+        <a-form-item label="部门">
+          <a-input v-model:value="editForm.dept" />
+        </a-form-item>
+        <a-form-item label="部门窗口">
+          <a-input v-model:value="editForm.dept_windows" />
+        </a-form-item>
+        <a-form-item label="地址">
+          <a-input v-model:value="editForm.address" />
+        </a-form-item>
+        <a-form-item label="联系电话">
+          <a-input v-model:value="editForm.contactNum" />
+        </a-form-item>
+        <a-form-item label="备注">
+          <a-input v-model:value="editForm.note" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+  </div>
 </template>
+
 <script lang="ts" setup>
 import { ref, onBeforeMount } from 'vue'
 import api from '@/api'
@@ -115,8 +144,32 @@ const handleAdd = async () => {
   })
   getData()
 }
-const editColumn = () => {
-  message.info('待开发')
+//弹出框编辑用户权限模块
+const editForm = ref()
+const modalText = ref<string>('Content of the modal')
+const visible = ref<boolean>(false)
+const confirmLoading = ref<boolean>(false)
+
+const showModal = (record: AddForm) => {
+  editForm.value = record
+  console.log(editForm)
+  visible.value = true
+}
+
+const handleOk = async () => {
+  modalText.value = 'The modal will be closed after two seconds'
+  confirmLoading.value = true
+  console.log(editForm.value)
+  await api.updateHelpDeskContact(editForm.value).then(()=>{
+    visible.value = false
+    message.info('提交成功')
+    confirmLoading.value = false
+    getData()
+  }
+  )
+}
+const editColumn = (record:AddForm) => {
+  showModal(record)
 }
 const columns_original = [
   { key: 'dept', title: '主管部门' },
