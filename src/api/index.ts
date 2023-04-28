@@ -114,12 +114,12 @@ export default {
     return GET('/lostFound/statistics')
   },
   //电话分部门统计
-  phoneConsultationStatData_By_dept() {
-    return GET('/phoneConsultation/stat_by_dept')
+  phoneConsultationStatData_By_dept(params: any) {
+    return GET('/phoneConsultation/stat_by_dept',params)
   },
   //电话按照时间按分类统计
   phone_stat_byuser_curmonth(params: any) {
-    return GET('/phoneConsultation//phone_stat_byuser_curmonth', params)
+    return GET('/phoneConsultation/phone_stat_byuser_curmonth', params)
   },
   //用户离职在职数量统计
   user_stat_by_state() {

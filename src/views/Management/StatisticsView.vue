@@ -32,7 +32,7 @@ const getLostFoundStatData = async () => {
 }
 const phoneConsultationStatData_By_dept = ref({})
 const getPhoneConsultationStatData_By_dept = async () => {
-  await api.phoneConsultationStatData_By_dept().then((res: any) => {
+  await api.phoneConsultationStatData_By_dept({ startDate: datePicker.value[0], endDate: datePicker.value[1] }).then((res: any) => {
     phoneConsultationStatData_By_dept.value = res
   })
 }
@@ -45,6 +45,7 @@ const getUser_stat_by_state = async () => {
 }
 const dateChange = () => {
   getPhone_stat_byuser_curmonth()
+  getPhoneConsultationStatData_By_dept()
 }
 const phone_stat_byuser_curmonth = ref({})
 const datePicker = ref([])

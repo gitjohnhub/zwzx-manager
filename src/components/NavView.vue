@@ -14,6 +14,9 @@
           <AppstoreOutlined />
           大厅管理
         </template>
+        <RouterLink to="/welcome">
+            <a-menu-item key="18">欢迎页面</a-menu-item>
+          </RouterLink>
         <a-sub-menu key="13" title="服务台"  v-if="userInfo.roleList.includes('服务台')">
           <RouterLink to="/PhoneConsultationView">
             <a-menu-item key="18">电话咨询登记</a-menu-item>

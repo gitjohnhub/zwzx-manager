@@ -1,9 +1,13 @@
 <template>
   <div class="welcome">
-    <h1>欢迎来到主界面</h1>
+    <StatisticsViewVue  />
   </div>
 
 </template>
+<script lang="ts" setup>
+import StatisticsViewVue from './Management/StatisticsView.vue';
+
+</script>
 
 <style scoped>
  .welcome{
