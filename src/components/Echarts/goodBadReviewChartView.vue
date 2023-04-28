@@ -1,5 +1,5 @@
 <template>
-  <a-card title="电话咨询分类">
+  <a-card title="12345按照事项分类">
     <div id="goodBadReview_stat_by_itemType" :style="{ width: '500px', height: '500px' }"></div>
   </a-card>
 </template>
