@@ -11,6 +11,7 @@
     </a-col>
     <a-col :span="12">
       <goodBadReviewChartView :data="goodBadReview_stat_by_itemType" />
+      <goodBadReviewMonthBarView :data="goodBadReview_stat_by_month" />
     </a-col>
   </a-row>
 </template>
@@ -22,6 +23,7 @@ import phoneColEchart from '@/components/Echarts/phoneColEchart.vue'
 import userStateEchart from '@/components/Echarts/userStateEchart.vue'
 import phoneByUserView from '@/components/Echarts/phoneByUserView.vue'
 import goodBadReviewChartView from '@/components/Echarts/goodBadReviewChartView.vue'
+import goodBadReviewMonthBarView from '@/components/Echarts/goodBadReviewMonthBarView.vue'
 onBeforeMount(() => {
   getLostFoundStatData()
   getPhoneConsultationStatData_By_dept()
@@ -72,11 +74,11 @@ const getGoodBadReview_stat_by_itemType = async () => {
       goodBadReview_stat_by_itemType.value = res
     })
 }
+const goodBadReview_stat_by_month = ref({})
 
 const getGoodBadReview_stat_by_month = async ()=>{
   await api.goodBadReview_stat_by_month().then((res:any)=>{
-    console.log('goodBadReview_stat_by_month=>',res)
-
+    goodBadReview_stat_by_month.value = res
   })
 }
 
