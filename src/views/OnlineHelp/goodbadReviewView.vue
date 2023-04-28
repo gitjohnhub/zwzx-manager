@@ -8,7 +8,10 @@
       <a-textarea v-model:value="addForm.content" placeholder="描述"> </a-textarea>
     </a-form-item>
     <a-form-item label="姓名">
-      <a-input v-model:value="addForm.name" placeholder="x先生/女士"> </a-input>
+      <a-select
+        v-model:value="addForm.name"
+        :options="[{ value: '先生', label: '先生' }, { value: '女士', label: '女士' }]"
+      ></a-select>
     </a-form-item>
     <a-form-item label="联系方式">
       <a-input v-model:value="addForm.phoneNum" placeholder="联系方式"> </a-input>
@@ -177,7 +180,7 @@ const dataSource = ref()
 // const options = ref<Array<string>>(['企业变更', '企业新办', '食品', '酒类'])
 const addForm = ref<AddForm>({
   numId: '',
-  name: '',
+  name: '先生',
   phoneNum: '',
   content: '',
   result: '直接回复',
