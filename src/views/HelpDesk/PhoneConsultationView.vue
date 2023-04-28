@@ -175,7 +175,8 @@ const itemTypes = [
   '停车预约',
   '税务',
   '公共卫生',
-  '其他'
+  '其他',
+  '3011不接'
 ]
 const results = ['已告知电话', '已转接', '已处理']
 const dataSource = ref()

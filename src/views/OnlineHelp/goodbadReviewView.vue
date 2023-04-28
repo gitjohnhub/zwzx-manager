@@ -194,8 +194,8 @@ const pager = ref({
 })
 const itemTypes = [
   {
-    value: '分之机构',
-    label: '分之机构'
+    value: '分支机构',
+    label: '分支机构'
   },
   {
     value: '食品',
