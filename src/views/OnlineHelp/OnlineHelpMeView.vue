@@ -136,7 +136,7 @@ const dataSource = ref()
   result: String
   dept:String
   itemType: String
-  createTime: String
+  createTime: Number
   recorder: String
 }
 
@@ -147,7 +147,7 @@ const addForm = ref<AddForm>({
   dept:'市场监督管理局',
   itemType: '企业变更',
   recorder: userInfo.userName,
-  createTime: ''
+  createTime: Date.now() + 8 * 60 * 60 * 1000
 })
 const pager = ref({
   pageNum: 1,
@@ -178,8 +178,16 @@ const depts = [
 ]
 const itemTypes = [
   {
-    value: '食品/酒类',
-    label: '食品/酒类'
+    value: '酒类',
+    label: '酒类'
+  },
+  {
+    value: '食品',
+    label: '食品'
+  },
+  {
+    value: '特种设备',
+    label: '特种设备'
   },
   {
     value: '企业新办',
@@ -208,8 +216,8 @@ const itemTypes = [
 ]
 const results = [
   {
-    value: '转市监局',
-    label: '转市监局'
+    value: '给市监局电话',
+    label: '给市监局电话'
   },
   {
     value: '直接回复',
@@ -233,7 +241,7 @@ const getData = async () => {
 }
 
 const handleAdd = async () => {
-  addForm.value.createTime = new Date().toISOString()
+  addForm.value.createTime = Date.now() + 8 * 60 * 60 * 1000
   await api.addOnlineHelp(addForm.value).then((res: any) => {
     message.info(`${res}`)
   })

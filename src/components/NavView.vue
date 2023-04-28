@@ -27,6 +27,10 @@
           <RouterLink to="/HelpDeskContact">
             <a-menu-item key="17">联系电话</a-menu-item>
           </RouterLink>
+          <RouterLink to="/HelpDeskWorkManuals">
+            <a-menu-item key="20">服务台工作手册</a-menu-item>
+          </RouterLink>
+
         </a-sub-menu>
 
         <a-sub-menu key="17" title="线上帮办/12345"  v-if="userInfo.roleList.includes('线上帮办')">
@@ -36,6 +40,9 @@
           </RouterLink>
           <RouterLink to="/goodbadReview">
             <a-menu-item key="22">12345</a-menu-item>
+          </RouterLink>
+          <RouterLink to="/OnlineHelpWorkManuals">
+            <a-menu-item key="24">工作手册</a-menu-item>
           </RouterLink>
         </a-sub-menu>
 
@@ -48,6 +55,10 @@
           <RouterLink to="/GeneralWindowContact">
             <a-menu-item key="16">联系表</a-menu-item>
           </RouterLink>
+          <RouterLink to="/GeneralWindowWorkManaul">
+            <a-menu-item key="30">工作手册</a-menu-item>
+          </RouterLink>
+
         </a-sub-menu>
       </a-sub-menu>
       <a-sub-menu key="sub2">

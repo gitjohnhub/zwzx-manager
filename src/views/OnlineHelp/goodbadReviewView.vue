@@ -184,7 +184,7 @@ const addForm = ref<AddForm>({
   hasReply: 0,
   recorder: userInfo.userName,
   itemType: '企业变更',
-  createTime: '',
+  createTime: Date.now() + 8 * 60 * 60 * 1000,
   replyContent:'',
 })
 const pager = ref({
@@ -194,24 +194,24 @@ const pager = ref({
 })
 const itemTypes = [
   {
-    value: '食品/酒类',
-    label: '食品/酒类'
+    value: '分之机构',
+    label: '分之机构'
   },
   {
-    value: '企业新办',
-    label: '企业新办'
+    value: '食品',
+    label: '食品'
   },
   {
-    value: '跨区迁移',
-    label: '跨区迁移'
+    value: '酒类',
+    label: '酒类'
   },
   {
-    value: '企业变更',
-    label: '企业变更'
+    value: '三类以外',
+    label: '三类以外'
   },
   {
-    value: '企业注销',
-    label: '企业注销'
+    value: '挂断',
+    label: '挂断'
   }
 ]
 const results = [
@@ -232,7 +232,7 @@ type AddForm = {
   result: String
   hasReply: Number
   itemType: String
-  createTime: String
+  createTime: Number
   recorder: String,
   replyContent:String
 }
@@ -244,7 +244,6 @@ const changePage = (page: any) => {
 }
 const getData = async () => {
   await api.goodbadReviewAll(pager.value).then((res: any) => {
-    console.log('onlineHelpAll=>', res)
     pager.value.pageNum = res.page.pageNum
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
@@ -253,7 +252,7 @@ const getData = async () => {
 }
 
 const handleAdd = async () => {
-  addForm.value.createTime = new Date().toISOString()
+  addForm.value.createTime = Date.now() + 8 * 60 * 60 * 1000
   await api.addGoodbadReview(addForm.value).then((res: any) => {
     message.info(`${res}`)
   })

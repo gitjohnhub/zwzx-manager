@@ -118,6 +118,36 @@ const routes = [
         },
         component:()=>import('@/views/OnlineHelp/goodbadReviewView.vue'),
       },
+      {
+        name:'HelpDeskWorkManuals',
+        path:'/HelpDeskWorkManuals',
+        meta:{
+          title:'服务台工作手册',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/HelpDesk/HelpDeskWorkManuals.vue'),
+      },
+      {
+        name:'OnlineHelpWorkManuals',
+        path:'/OnlineHelpWorkManuals',
+        meta:{
+          title:'线上帮办/12345工作手册',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/OnlineHelp/OnlineHelpWorkManualsView.vue'),
+      },
+      {
+        name:'GeneralWindowWorkManaul',
+        path:'/GeneralWindowWorkManaul',
+        meta:{
+          title:'十部门综合窗口工作手册',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/GeneralWindow/GeneralWindowWorkManaulView.vue'),
+      },
+
+
+
 
 
     ]
