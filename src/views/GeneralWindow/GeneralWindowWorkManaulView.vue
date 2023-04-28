@@ -59,6 +59,54 @@ const content = ref([
       },
     ]
   },
+  {
+    tab: '发改委',
+    title: '信用查询',
+    progress: [
+      {
+        title: '咨询',
+        content: `线上就可调取（信用中国（上海））。外地企业不可以调取。`
+      },
+    ]
+  },
+  {
+    tab: '民宗办',
+    title: '变更民族成分',
+    progress: [
+      {
+        title: '咨询',
+        content: `确认年龄。20岁以上法律规定不可以更改`
+      },
+      {
+        title: '受理',
+        content: `打开桌面“个人”——“综窗受理”——“民宗办”，找到材料清单`
+      },
+    ]
+  },
+  {
+    tab: '财政局',
+    title: '代理记账的申请',
+    progress: [
+      {
+        title: '受理',
+        content: `打开桌面“个人”——“综窗受理”——“财政局”——“代理记账的申请”`
+      },
+      {
+        title: '备注',
+        content: `（财政票据在茅台路476号办理）`
+      },
+    ]
+  },
+  {
+    tab: '其余低频事项',
+    title: '受理方式',
+    progress: [
+      {
+        title: '受理',
+        content: `联系表找到部门联系人，告知申请人联系科室。`
+      }
+    ]
+  }
 ])
 const activeKey = ref('1')
 </script>
