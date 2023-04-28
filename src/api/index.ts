@@ -124,5 +124,12 @@ export default {
   //用户离职在职数量统计
   user_stat_by_state() {
     return GET('/users/user_stat_by_state')
+  },
+  //12345按照事项分类
+  goodBadReview_stat_by_itemType(params:any){
+    return GET('/goodbadReview/stat_by_itemType',params)
+  },
+  goodBadReview_stat_by_month(){
+    return GET('/goodbadReview/stat_by_month')
   }
 }

@@ -9,6 +9,9 @@
       <phoneColEchart :data="phoneConsultationStatData_By_dept" />
      <userStateEchart :data="user_stat_by_state" />
     </a-col>
+    <a-col :span="12">
+      <goodBadReviewChartView :data="goodBadReview_stat_by_itemType" />
+    </a-col>
   </a-row>
 </template>
 <script setup lang="ts">
@@ -18,11 +21,14 @@ import EchartView from '@/components/Echarts/EchartView.vue'
 import phoneColEchart from '@/components/Echarts/phoneColEchart.vue'
 import userStateEchart from '@/components/Echarts/userStateEchart.vue'
 import phoneByUserView from '@/components/Echarts/phoneByUserView.vue'
+import goodBadReviewChartView from '@/components/Echarts/goodBadReviewChartView.vue'
 onBeforeMount(() => {
   getLostFoundStatData()
   getPhoneConsultationStatData_By_dept()
   getUser_stat_by_state()
   getPhone_stat_byuser_curmonth()
+  getGoodBadReview_stat_by_itemType()
+  getGoodBadReview_stat_by_month()
 })
 const lostFound_pie_data = ref({})
 const getLostFoundStatData = async () => {
@@ -46,6 +52,8 @@ const getUser_stat_by_state = async () => {
 const dateChange = () => {
   getPhone_stat_byuser_curmonth()
   getPhoneConsultationStatData_By_dept()
+  getGoodBadReview_stat_by_itemType()
+
 }
 const phone_stat_byuser_curmonth = ref({})
 const datePicker = ref([])
@@ -54,8 +62,22 @@ const getPhone_stat_byuser_curmonth = async () => {
     .phone_stat_byuser_curmonth({ startDate: datePicker.value[0], endDate: datePicker.value[1] })
     .then((res: any) => {
       phone_stat_byuser_curmonth.value = res
-      console.log('phone_stat_byuser_curmonth=>', res)
     })
+}
+const goodBadReview_stat_by_itemType = ref({})
+const getGoodBadReview_stat_by_itemType = async () => {
+  await api
+    .goodBadReview_stat_by_itemType({ startDate: datePicker.value[0], endDate: datePicker.value[1] })
+    .then((res: any) => {
+      goodBadReview_stat_by_itemType.value = res
+    })
+}
+
+const getGoodBadReview_stat_by_month = async ()=>{
+  await api.goodBadReview_stat_by_month().then((res:any)=>{
+    console.log('goodBadReview_stat_by_month=>',res)
+
+  })
 }
 
 // const getPhoneConsultationStatData_By_dept = async () => {
