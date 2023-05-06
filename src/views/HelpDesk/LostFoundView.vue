@@ -64,7 +64,7 @@
               title="确认已领取?"
               @confirm="onConfirmHasDraw(record)"
             >
-              <a-button type="primary">已领取</a-button>
+              <a-button type="primary" :disabled="record.hasDraw != 0">已领取</a-button>
             </a-popconfirm>
           </template>
 

@@ -98,7 +98,7 @@
 
       <template v-if="column.key === 'action'">
         <span>
-          <a-button type="primary" style="inline" @click="showModal(record)">确认完结</a-button>
+          <a-button type="primary" :disabled="record.hasReply != 0" style="inline" @click="showModal(record)">确认完结</a-button>
         </span>
       </template>
     </template>

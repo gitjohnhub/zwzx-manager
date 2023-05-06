@@ -20,11 +20,11 @@
       </template>
       <template v-if="column.key === 'action'">
         <span>
-          <a-button type="primary" style="inline" @click="approveLeaveOfAbsence(record._id, 1)"
+          <a-button type="primary" :disabled="record.approve != 0" style="inline" @click="approveLeaveOfAbsence(record._id, 1)"
             >同意</a-button
           >
           <a-divider type="vertical" />
-          <a-button type="danger" style="inline" @click="approveLeaveOfAbsence(record._id, 2)">
+          <a-button type="danger"  :disabled="record.approve != 0" style="inline" @click="approveLeaveOfAbsence(record._id, 2)">
             驳回
           </a-button>
         </span>
