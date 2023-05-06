@@ -112,6 +112,11 @@ const columns = [
     key: 'halfDay'
   },
   {
+    title: '请假类型',
+    dataIndex: 'dayType',
+    key: 'dayType'
+  },
+  {
     title: '备注',
     dataIndex: 'note',
     key: 'note'
