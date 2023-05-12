@@ -7,7 +7,7 @@
         <a-form-item>
           <a-select ref="select" v-model:value="addForm.itemType" >
             <a-select-option value="身份证">身份证</a-select-option>
-            <a-select-option value="数字证书">身份证</a-select-option>
+            <a-select-option value="数字证书">数字证书</a-select-option>
             <a-select-option value="公章">公章</a-select-option>
             <a-select-option value="ID卡">ID卡</a-select-option>
             <a-select-option value="银行卡">银行卡</a-select-option>
