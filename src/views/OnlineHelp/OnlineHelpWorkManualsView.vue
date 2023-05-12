@@ -36,6 +36,28 @@ const content = ref([
     ]
   },
   {
+    tab: '办不成事',
+    title: '接听',
+    progress: [
+      {
+        title: '无法现场解决',
+        content: `形成《“办不成事”业务对接表》工单，按照职责分工派单给相关业务部门，窗口人员协同相关业务部门共同探讨解决方案`
+      },
+      {
+        title: '相关业务部门',
+        content: `五个工作日内回复办事对象，将答复内容反馈给区政务服务中心`
+      },
+      {
+        title: '可现场解决',
+        content: `由区政务服务中心沟通可直接现场解决的，现场协调解决、进行现场办结`
+      },
+      {
+        title: '办结、归档',
+        content: `定期整理分析诉求、优化办事流程`
+      }
+    ]
+  },
+  {
     tab: '线上帮办',
     title: '操作指引',
     progress: [
@@ -53,5 +75,5 @@ const content = ref([
       }
     ]}
 ])
-const activeKey = ref('1')
+const activeKey = ref('12345电话')
 </script>

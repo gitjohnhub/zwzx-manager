@@ -1,17 +1,21 @@
 <template>
-  <a-range-picker v-model:value="datePicker" @openChange="dateChange()" />
+  <a-row>
+    <a-tag color="#108ee9">日期查询：</a-tag>
+    <a-range-picker v-model:value="datePicker" @openChange="dateChange()" />
+  </a-row>
   <a-row :gutter="[16, 16]">
     <a-col :span="12">
-      <phoneByUserView :data="phone_stat_byuser_curmonth" />
-      <EchartView :lostFound_pie_data="lostFound_pie_data" />
+      <goodBadReviewChartView :data="goodBadReview_stat_by_itemType" />
+      <goodBadReviewMonthBarView :data="goodBadReview_stat_by_month" />
+
     </a-col>
     <a-col :span="12">
       <phoneColEchart :data="phoneConsultationStatData_By_dept" />
      <userStateEchart :data="user_stat_by_state" />
     </a-col>
     <a-col :span="12">
-      <goodBadReviewChartView :data="goodBadReview_stat_by_itemType" />
-      <goodBadReviewMonthBarView :data="goodBadReview_stat_by_month" />
+      <phoneByUserView :data="phone_stat_byuser_curmonth" />
+      <EchartView :lostFound_pie_data="lostFound_pie_data" />
     </a-col>
   </a-row>
 </template>

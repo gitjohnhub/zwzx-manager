@@ -1,4 +1,5 @@
 <template>
+
   <a-row :gutter="[16, 16]">
     <a-col :span="20">
       <a-form layout="inline" :model="addForm" ref="formRef" name="addForm">
@@ -88,6 +89,8 @@ import { useUserStore } from '@/stores';
 import type { FormInstance } from 'ant-design-vue';
 import { message } from 'ant-design-vue';
 import util from '@/utils/util';
+import { useRoute } from 'vue-router'
+const route = useRoute()
 // import { cloneDeep } from 'lodash-es';
 const pager = ref({
   pageNum:1,

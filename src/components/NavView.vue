@@ -41,6 +41,9 @@
           <RouterLink to="/goodbadReview">
             <a-menu-item key="22">12345</a-menu-item>
           </RouterLink>
+          <RouterLink to="/cannotSolve">
+            <a-menu-item key="23">办不成事</a-menu-item>
+          </RouterLink>
           <RouterLink to="/OnlineHelpWorkManuals">
             <a-menu-item key="24">工作手册</a-menu-item>
           </RouterLink>

@@ -80,5 +80,5 @@ const content = ref([
     ]
   }
 ])
-const activeKey = ref('1')
+const activeKey = ref('电话接听')
 </script>

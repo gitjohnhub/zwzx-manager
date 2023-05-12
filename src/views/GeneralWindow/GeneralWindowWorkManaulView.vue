@@ -108,5 +108,5 @@ const content = ref([
     ]
   }
 ])
-const activeKey = ref('1')
+const activeKey = ref('民非领证')
 </script>

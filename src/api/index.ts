@@ -108,6 +108,17 @@ export default {
     return POST('/goodbadReview/update', params)
   },
 
+  //办不成事
+  cannotSolve(params: any) {
+    return GET('/cannotSolve/all', params)
+  },
+  addCannotSolve(params: any) {
+    return POST('/cannotSolve/add', params)
+  },
+  updateCannotSolve(params: any) {
+    return POST('/cannotSolve/update', params)
+  },
+
   //数据管理
   //遗失物品分类统计
   LostFoundStatData() {

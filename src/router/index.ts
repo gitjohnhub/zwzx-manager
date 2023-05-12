@@ -119,6 +119,15 @@ const routes = [
         component:()=>import('@/views/OnlineHelp/goodbadReviewView.vue'),
       },
       {
+        name:'cannotSolve',
+        path:'/cannotSolve',
+        meta:{
+          title:'办不成事反映登记',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/OnlineHelp/cannotSolveView.vue'),
+      },
+      {
         name:'HelpDeskWorkManuals',
         path:'/HelpDeskWorkManuals',
         meta:{
