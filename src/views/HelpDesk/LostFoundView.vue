@@ -6,6 +6,7 @@
         <a-form-item>
           <a-select ref="select" v-model:value="addForm.itemType" >
             <a-select-option value="身份证">身份证</a-select-option>
+            <a-select-option value="数字证书">身份证</a-select-option>
             <a-select-option value="公章">公章</a-select-option>
             <a-select-option value="ID卡">ID卡</a-select-option>
             <a-select-option value="银行卡">银行卡</a-select-option>
@@ -32,7 +33,7 @@
           </a-button>
         </a-form-item>
         <a-form-item>
-          <a-input-search
+          <!-- <a-input-search
           v-model:value="searchText"
           placeholder="搜索遗失物品"
           style="width: 200px"
@@ -42,7 +43,7 @@
             @click="resetForm"
           >
             重置
-          </a-button>
+          </a-button> -->
           <a-badge :count="pager.total" :overflow-count="999" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
         </a-form-item>
       </a-form>
