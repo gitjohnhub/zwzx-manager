@@ -43,7 +43,7 @@
             <a-popconfirm
               v-if="dataSource.length"
               title="确认已领取?"
-              @confirm="onConfirmHasDraw(record._id,1,userInfo.userName)"
+              @confirm="onConfirmHasDraw(record)"
             >
               <a-button type="primary" :disabled="record.hasDraw != 0">已领取</a-button>
             </a-popconfirm>
@@ -66,6 +66,8 @@ import api from '@/api'
 import { useUserStore } from '@/stores';
 import type { FormInstance } from 'ant-design-vue';
 import { message } from 'ant-design-vue';
+import util from '@/utils/util';
+import type { Data } from '@antv/g2plot';
 // import { cloneDeep } from 'lodash-es';
 const userInfo = useUserStore().userInfo
 const pager = ref({
@@ -78,6 +80,7 @@ const changePage=(page:any)=>{
   console.log(pager.value.pageNum)
   getData()
 }
+
 onBeforeMount(() => {
   getData()
 })
@@ -157,9 +160,13 @@ const getData = async () => {
     dataSource.value = res.list
   })
 }
-const onConfirmHasDraw = async (key: string,hasDraw:number,confirmer:string) => {
-  await api.updateReceiveCertificate({_id:key,hasDraw:hasDraw,confirmer:confirmer}).then(()=>{
+const onConfirmHasDraw = async (record:any) => {
+  await api.updateReceiveCertificate({_id:record._id,hasDraw:record.hasDraw,confirmer:userInfo.userName}).then(()=>{
     message.info('确认成功')
+    const content = `<html><body><p style='text-align:center;font-size:24px;'>
+    民政执照领取确认单</p ><p style='font-size:16px;'>本人已领取以下执照:</p><div style='text-align:left;font-size:16px;'><p>公司名称：${record.companyName}</p><p>领取人姓名:${record.drawName}</p> <p >领取人身份证号:${record.drawId}</p><p>联系电话:${record.drawContact}</p><p>备注:${record.note??'无'}</p>
+     <p>领取人（签字）:___________________</p><p>领取日期：________年________月________日</p></body></html>"`
+    util.downloadFile(content,`${record.companyName??'无'}民政执照领取确认单.docx`)
     getData()
   }
     )
