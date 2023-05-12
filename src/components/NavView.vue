@@ -15,7 +15,7 @@
           大厅管理
         </template>
         <RouterLink to="/welcome">
-            <a-menu-item key="18">欢迎页面</a-menu-item>
+            <a-menu-item key="31">欢迎页面</a-menu-item>
           </RouterLink>
         <a-sub-menu key="13" title="服务台"  v-if="userInfo.roleList.includes('服务台')">
           <RouterLink to="/PhoneConsultationView">
@@ -84,6 +84,9 @@
         </RouterLink>
         <RouterLink to="/statistics">
           <a-menu-item key="7">数据统计</a-menu-item>
+        </RouterLink>
+        <RouterLink to="/DataSearch">
+          <a-menu-item key="32">数据搜索</a-menu-item>
         </RouterLink>
       </a-sub-menu>
     </a-menu>

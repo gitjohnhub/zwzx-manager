@@ -352,7 +352,29 @@ const columns = columns_original.map((item) => {
         }
       }
     }
-  } else {
+  } else if (item.key === 'dept'){
+    return {
+      key: item.key,
+      dataIndex: item.key,
+      title: item.title,
+      filters: depts.map((option) => {
+        return { text: option.dept, value: option.dept }
+      }),
+      onFilter: (value: string, record: any) => {
+        return record.dept.includes(value)
+
+      },
+      onFilterDropdownVisibleChange: (visible: any) => {
+        if (visible) {
+          setTimeout(() => {
+            searchInput.value.focus()
+          }, 100)
+        }
+      }
+    }
+
+  }
+  else {
     return {
       key: item.key,
 
@@ -365,7 +387,6 @@ const columns = columns_original.map((item) => {
 
 const search_state = ref({
   searchText: '',
-
   searchedColumn: ''
 })
 

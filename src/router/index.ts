@@ -137,6 +137,15 @@ const routes = [
         component:()=>import('@/views/HelpDesk/HelpDeskWorkManuals.vue'),
       },
       {
+        name:'DataSearch',
+        path:'/DataSearch',
+        meta:{
+          title:'数据搜索',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/Management/DataSearchView.vue'),
+      },
+      {
         name:'OnlineHelpWorkManuals',
         path:'/OnlineHelpWorkManuals',
         meta:{
