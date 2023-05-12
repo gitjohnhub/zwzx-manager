@@ -12,6 +12,9 @@
             :description="ctx.content"
           />
         </a-steps>
+        <a-button type="primary" danger block @click="downloadExcel" v-if="item.tab === '办不成事'">
+        下载办不成事反映登记表
+      </a-button>
       </a-card>
     </a-tab-pane>
   </a-tabs>
@@ -76,4 +79,13 @@ const content = ref([
     ]}
 ])
 const activeKey = ref('12345电话')
+const downloadExcel = () => {
+  const link = document.createElement('a')
+  link.href = '/办不成事业务对接表.xls'
+  link.setAttribute('download', '办不成事业务对接表.xls')
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+
+}
 </script>

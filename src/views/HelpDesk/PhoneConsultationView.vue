@@ -1,6 +1,11 @@
 <template>
   <!-- form -->
   <a-form :model="addForm" ref="formRef" name="addForm">
+    <a-form-item>
+      <a-button type="primary" danger block @click="downloadExcel">
+        下载3011打不通登记表
+      </a-button>
+    </a-form-item>
     <a-form-item label="所属部门">
       <a-select ref="select" v-model:value="addForm.dept">
         <a-select-option v-for="value in depts" :value="value.dept" :key="value">{{
@@ -31,6 +36,8 @@
         增加记录
       </a-button>
     </a-form-item>
+
+
   </a-form>
 
   <!-- table -->
@@ -178,6 +185,24 @@ const itemTypes = [
   '其他',
   '3011不接'
 ]
+const downloadExcel = () => {
+//   let wb = XLSX.utils.book_new()
+// // 创建工作表
+// let ws = XLSX.utils.aoa_to_sheet([['', 'abds']])
+// // 向工作簿添加工作表
+// XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+// // 生成二进制数据
+// let wbout = XLSX.write(wb, {bookType:'xlsx', bookSST:false, type:'binary'})
+//   const file = new Blob([wbout], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"})
+  // const url = window.URL.createObjectURL(file)
+  const link = document.createElement('a')
+  link.href = '/3011打不通.xls'
+  link.setAttribute('download', '3011打不通.xls')
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+
+}
 const results = ['已告知电话', '已转接', '已处理']
 const dataSource = ref()
 // const options = ref<Array<string>>(['企业变更', '企业新办', '食品', '酒类'])

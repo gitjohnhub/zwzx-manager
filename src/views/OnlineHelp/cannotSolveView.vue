@@ -40,7 +40,7 @@
     </a-form-item>
     <a-form-item>
 
-    <a-button type="warning" style="inline" @click="downloadExcel()">表格下载</a-button>
+    <a-button type="primary" danger style="inline" @click="downloadExcel()">表格下载</a-button>
     </a-form-item>
   </a-form>
 

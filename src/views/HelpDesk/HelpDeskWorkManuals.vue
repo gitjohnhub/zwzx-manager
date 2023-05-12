@@ -12,6 +12,9 @@
             :description="ctx.content"
           />
         </a-steps>
+        <a-button type="primary" danger block @click="downloadExcel" v-if="item.tab === '投诉3011不接'">
+        下载3011打不通登记表
+      </a-button>
       </a-card>
     </a-tab-pane>
   </a-tabs>
@@ -81,4 +84,13 @@ const content = ref([
   }
 ])
 const activeKey = ref('电话接听')
+const downloadExcel = () => {
+  const link = document.createElement('a')
+  link.href = '/3011打不通.xls'
+  link.setAttribute('download', '3011打不通.xls')
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+
+}
 </script>
