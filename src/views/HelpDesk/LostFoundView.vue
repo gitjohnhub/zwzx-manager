@@ -34,7 +34,7 @@
           </a-button>
         </a-form-item>
         <a-form-item>
-          <!-- <a-input-search
+          <a-input-search
           v-model:value="searchText"
           placeholder="搜索遗失物品"
           style="width: 200px"
@@ -44,7 +44,7 @@
             @click="resetForm"
           >
             重置
-          </a-button> -->
+          </a-button>
           <a-badge :count="pager.total" :overflow-count="999" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
         </a-form-item>
       </a-form>
@@ -156,12 +156,18 @@ interface DataItem {
 }
 // 搜索组件
 const searchText = ref('')
-const searchData = () => {
-  const list = dataSource.value.filter(item => {
-    return item.withName?.includes(searchText.value) || item.IdNum?.includes(searchText.value)
+const searchData = async () => {
+  console.log("withName=>",searchText.value)
+  await api.lostFoundAll({withName:searchText.value}).then((res:any) => {
+    console.log("res=>",res)
+    dataSource.value = res.list
+
   })
+  // const list = dataSource.value.filter(item => {
+  //   return item.withName?.includes(searchText.value) || item.IdNum?.includes(searchText.value)
+  // })
   // 更新 dataList,触发界面更新
-  dataSource.value = list
+  // dataSource.value = list
 }
 watch(searchText,()=>{
   if (searchText.value != ''){
