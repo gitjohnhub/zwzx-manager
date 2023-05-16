@@ -159,6 +159,9 @@ const searchText = ref('')
 const searchData = async () => {
   console.log("withName=>",searchText.value)
   await api.lostFoundAll({withName:searchText.value}).then((res:any) => {
+    pager.value.pageNum = res.page.pageNum
+    pager.value.pageSize = res.page.pageSize
+    pager.value.total = res.page.total
     console.log("res=>",res)
     dataSource.value = res.list
 

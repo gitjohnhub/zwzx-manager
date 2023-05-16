@@ -85,9 +85,9 @@
         <RouterLink to="/statistics">
           <a-menu-item key="7">数据统计</a-menu-item>
         </RouterLink>
-        <RouterLink to="/DataSearch">
+        <!-- <RouterLink to="/DataSearch">
           <a-menu-item key="32">数据搜索</a-menu-item>
-        </RouterLink>
+        </RouterLink> -->
       </a-sub-menu>
     </a-menu>
   </div>

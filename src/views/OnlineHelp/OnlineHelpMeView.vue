@@ -7,18 +7,12 @@
     <a-form-item label="姓名">
       <a-input v-model:value="addForm.name" placeholder="x先生/女士/某某公司"> </a-input>
     </a-form-item>
-      <a-form-item label="所属部门">
-      <a-select
-        v-model:value="addForm.dept"
-        :options="depts"
-      ></a-select>
+    <a-form-item label="所属部门">
+      <a-select v-model:value="addForm.dept" :options="depts"></a-select>
     </a-form-item>
 
     <a-form-item label="所属事项">
-      <a-select
-        v-model:value="addForm.itemType"
-        :options="itemTypes"
-      ></a-select>
+      <a-select v-model:value="addForm.itemType" :options="itemTypes"></a-select>
     </a-form-item>
     <a-form-item label="咨询结果">
       <a-select v-model:value="addForm.result" style="width: 120px" :options="results"></a-select>
@@ -28,6 +22,10 @@
       <a-button type="primary" block @click="handleAdd" :disabled="addForm.content.length === 0">
         增加记录
       </a-button>
+    </a-form-item>
+    <a-form-item>
+      <a-button @click="onSearch"> <SearchOutlined />按部门搜索 </a-button>
+      <a-button @click="resetTable"> <delete-outlined />重置搜索 </a-button>
     </a-form-item>
   </a-form>
 
@@ -118,7 +116,7 @@ import type { FormInstance } from 'ant-design-vue'
 
 import { message } from 'ant-design-vue'
 
-import { SearchOutlined } from '@ant-design/icons-vue'
+import { SearchOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import { useUserStore } from '@/stores'
 // import { cloneDeep } from 'lodash-es';
 
@@ -129,12 +127,26 @@ onBeforeMount(() => {
 const formRef = ref<FormInstance>()
 const userInfo = useUserStore().userInfo
 const dataSource = ref()
+
+const resetTable = () => {
+  getData()
+}
+const onSearch = async () => {
+  await api.onlineHelpAll({ dept: addForm.value.dept }).then((res: any) => {
+    console.log('res=>', res)
+    pager.value.pageNum = res.page.pageNum
+    pager.value.pageSize = res.page.pageSize
+    pager.value.total = res.page.total
+    dataSource.value = res.list
+  })
+}
+
 // const options = ref<Array<string>>(['企业变更', '企业新办', '食品', '酒类'])
-  type AddForm = {
+type AddForm = {
   name: String
   content: String
   result: String
-  dept:String
+  dept: String
   itemType: String
   createTime: Number
   recorder: String
@@ -144,7 +156,7 @@ const addForm = ref<AddForm>({
   name: '',
   content: '',
   result: '直接回复',
-  dept:'市场监督管理局',
+  dept: '市场监督管理局',
   itemType: '企业变更',
   recorder: userInfo.userName,
   createTime: Date.now() + 8 * 60 * 60 * 1000
@@ -221,8 +233,8 @@ const results = [
   },
   {
     value: '直接回复',
-    label: '直接回复',
-  },
+    label: '直接回复'
+  }
 ]
 
 const changePage = (page: any) => {
@@ -260,7 +272,7 @@ const columns_original = [
   { key: 'dept', title: '所属部门' },
   { key: 'result', title: '咨询结果' },
   { key: 'createTime', title: '提交时间' },
-  { key: 'recorder', title: '记录人' },
+  { key: 'recorder', title: '记录人' }
   // { key: 'action', title: '动作' }
 ]
 

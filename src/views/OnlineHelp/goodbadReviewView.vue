@@ -33,6 +33,10 @@
         增加记录
       </a-button>
     </a-form-item>
+    <a-form-item>
+      <a-button @click="onSearch"> <SearchOutlined />按事项搜索 </a-button>
+      <a-button @click="resetTable"> <delete-outlined />重置搜索 </a-button>
+    </a-form-item>
   </a-form>
 
   <!-- table -->
@@ -153,6 +157,18 @@ const confirmReplyForm = ref()
 const modalText = ref<string>('Content of the modal')
 const visible = ref<boolean>(false)
 const confirmLoading = ref<boolean>(false)
+const resetTable = () => {
+  getData()
+}
+const onSearch = async () => {
+  await api.goodbadReviewAll({ itemType: addForm.value.itemType }).then((res: any) => {
+    console.log('res=>', res)
+    pager.value.pageNum = res.page.pageNum
+    pager.value.pageSize = res.page.pageSize
+    pager.value.total = res.page.total
+    dataSource.value = res.list
+  })
+}
 
 const showModal = (record: AddForm) => {
   confirmReplyForm.value = record

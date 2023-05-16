@@ -36,8 +36,10 @@
         增加记录
       </a-button>
     </a-form-item>
-
-
+    <a-form-item>
+      <a-button @click="onSearch"> <SearchOutlined />按部门搜索 </a-button>
+      <a-button @click="resetTable"> <delete-outlined />重置搜索 </a-button>
+    </a-form-item>
   </a-form>
 
   <!-- table -->
@@ -186,14 +188,14 @@ const itemTypes = [
   '3011不接'
 ]
 const downloadExcel = () => {
-//   let wb = XLSX.utils.book_new()
-// // 创建工作表
-// let ws = XLSX.utils.aoa_to_sheet([['', 'abds']])
-// // 向工作簿添加工作表
-// XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
-// // 生成二进制数据
-// let wbout = XLSX.write(wb, {bookType:'xlsx', bookSST:false, type:'binary'})
-//   const file = new Blob([wbout], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"})
+  //   let wb = XLSX.utils.book_new()
+  // // 创建工作表
+  // let ws = XLSX.utils.aoa_to_sheet([['', 'abds']])
+  // // 向工作簿添加工作表
+  // XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+  // // 生成二进制数据
+  // let wbout = XLSX.write(wb, {bookType:'xlsx', bookSST:false, type:'binary'})
+  //   const file = new Blob([wbout], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"})
   // const url = window.URL.createObjectURL(file)
   const link = document.createElement('a')
   link.href = '/3011打不通.xls'
@@ -201,7 +203,6 @@ const downloadExcel = () => {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
-
 }
 const results = ['已告知电话', '已转接', '已处理']
 const dataSource = ref()
@@ -219,6 +220,19 @@ const pager = ref({
   pageSize: 10,
   total: 0
 })
+
+const resetTable = () => {
+  getData()
+}
+const onSearch = async () => {
+  await api.phoneConsultation({ dept: addForm.value.dept }).then((res: any) => {
+    console.log('res=>', res)
+    pager.value.pageNum = res.page.pageNum
+    pager.value.pageSize = res.page.pageSize
+    pager.value.total = res.page.total
+    dataSource.value = res.list
+  })
+}
 
 const depts = [
   {
@@ -352,7 +366,7 @@ const columns = columns_original.map((item) => {
         }
       }
     }
-  } else if (item.key === 'dept'){
+  } else if (item.key === 'dept') {
     return {
       key: item.key,
       dataIndex: item.key,
@@ -362,7 +376,6 @@ const columns = columns_original.map((item) => {
       }),
       onFilter: (value: string, record: any) => {
         return record.dept.includes(value)
-
       },
       onFilterDropdownVisibleChange: (visible: any) => {
         if (visible) {
@@ -372,9 +385,7 @@ const columns = columns_original.map((item) => {
         }
       }
     }
-
-  }
-  else {
+  } else {
     return {
       key: item.key,
 
