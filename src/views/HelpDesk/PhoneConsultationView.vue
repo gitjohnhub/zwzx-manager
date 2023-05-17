@@ -37,9 +37,15 @@
       </a-button>
     </a-form-item>
     <a-form-item>
+      <a-space>
       <a-button @click="onSearch"> <SearchOutlined />按部门搜索 </a-button>
-      <a-button @click="resetTable"> <delete-outlined />重置搜索 </a-button>
+      <a-button @click="resetTable"> <monitor-outlined />重置搜索 </a-button>
+      <a-button @click="downloadExcel"><download-outlined />
+        下载3011打不通登记表
+      </a-button>
+
       <a-badge :count="pager.total" :overflow-count="999" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
+    </a-space>
     </a-form-item>
   </a-form>
 
@@ -165,7 +171,7 @@ import type { FormInstance } from 'ant-design-vue'
 
 import { message } from 'ant-design-vue'
 
-import { SearchOutlined } from '@ant-design/icons-vue'
+import { SearchOutlined ,DownloadOutlined,MonitorOutlined} from '@ant-design/icons-vue'
 import { useUserStore } from '@/stores'
 // import { cloneDeep } from 'lodash-es';
 
@@ -200,7 +206,11 @@ const downloadExcel = () => {
   // const url = window.URL.createObjectURL(file)
   const link = document.createElement('a')
   link.href = '/3011打不通.xls'
-  link.setAttribute('download', '3011打不通.xls')
+  const file_date = new Date()
+  const mydate = file_date.setHours(file_date.getHours() + 8)
+
+
+  link.setAttribute('download','3011_'+ new Date(mydate).toISOString()+'.xls')
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
