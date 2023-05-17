@@ -134,7 +134,7 @@ type AddForm = {
   note:String
 }
 const getAllUserName = async ()=>{
-  await api.getAllUserName().then((res)=>{
+  await api.getAllUserName().then((res:any)=>{
     console.log("userName=>",res)
     users.value = res.map((item:any)=>{
       return item.userName

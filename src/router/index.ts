@@ -161,7 +161,7 @@ const routes = [
           title:'系统管理',
           requiresAuth: true,
         },
-        component:()=>import('@/views/Management/SystemControlView.vue'),
+        component:()=>import('@/views/Management/NetControlView.vue'),
       },
 
       {
