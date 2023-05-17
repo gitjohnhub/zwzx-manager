@@ -107,6 +107,19 @@ export default {
   updategoodbadReview(params: any) {
     return POST('/goodbadReview/update', params)
   },
+  //系统管理
+  systemControl() {
+    return GET('/systemControl/all')
+  },
+  addSystemControl(params: any) {
+    return POST('/systemControl/add', params)
+  },
+  updateSystemControl(params: any) {
+    return POST('/systemControl/update', params)
+  },
+  getAllUserName(){
+    return GET('/users/allUserName')
+  },
 
   //办不成事
   cannotSolve(params: any) {

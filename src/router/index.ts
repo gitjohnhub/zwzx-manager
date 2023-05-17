@@ -155,6 +155,16 @@ const routes = [
         component:()=>import('@/views/OnlineHelp/OnlineHelpWorkManualsView.vue'),
       },
       {
+        name:'SystemControl',
+        path:'/SystemControl',
+        meta:{
+          title:'系统管理',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/Management/SystemControlView.vue'),
+      },
+
+      {
         name:'GeneralWindowWorkManaul',
         path:'/GeneralWindowWorkManaul',
         meta:{
