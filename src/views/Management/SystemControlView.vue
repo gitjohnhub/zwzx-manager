@@ -2,16 +2,16 @@
   <!-- form -->
   <a-form layout="inline" :model="addForm" ref="formRef" name="addForm">
     <!-- Form文本 -->
-    <a-form-item>
-      <a-input v-model:value="addForm.name" placeholder="事项名称"> </a-input>
+    <a-form-item label="系统名称">
+      <a-input v-model:value="addForm.name" placeholder="系统名称"> </a-input>
     </a-form-item>
-    <a-form-item>
+    <a-form-item  label="系统地址">
       <a-input v-model:value="addForm.address" placeholder="系统地址"> </a-input>
     </a-form-item>
-    <a-form-item>
+    <a-form-item  label="用户名">
       <a-input v-model:value="addForm.account" placeholder="用户名"> </a-input>
     </a-form-item>
-    <a-form-item>
+    <a-form-item  label="密码">
       <a-input v-model:value="addForm.password" placeholder="密码"> </a-input>
     </a-form-item>
     <a-form-item  label="系统A角">
@@ -20,7 +20,6 @@
               value
             }}</a-select-option>
           </a-select>
-      <!-- <a-input v-model:value="addForm.charger" placeholder="系统A角"> </a-input> -->
     </a-form-item>
     <a-form-item>
       <a-input v-model:value="addForm.note" placeholder="备注"> </a-input>
@@ -68,18 +67,6 @@
 
 
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'dept_windows'">
-        <span>
-            {{ record.dept_windows }}
-        </span>
-      </template>
-      <template v-if="column.key === 'contactNum'">
-        <span>
-          <a-tag>
-            {{ record.contactNum }}
-          </a-tag>
-        </span>
-      </template>
       <template v-if="column.key === 'action'">
         <span>
           <a-button type="primary" style="inline" @click="editColumn(record)">编辑</a-button>
@@ -115,7 +102,6 @@
               value
             }}</a-select-option>
           </a-select>
-      <!-- <a-input v-model:value="addForm.charger" placeholder="系统A角"> </a-input> -->
     </a-form-item>
         <a-form-item label="备注">
           <a-input v-model:value="editForm.note" />
