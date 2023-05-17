@@ -14,8 +14,13 @@
     <a-form-item>
       <a-input v-model:value="addForm.password" placeholder="密码"> </a-input>
     </a-form-item>
-    <a-form-item>
-      <a-input v-model:value="addForm.charger" placeholder="系统A角"> </a-input>
+    <a-form-item  label="系统A角">
+      <a-select ref="select" v-model:value="addForm.charger">
+            <a-select-option v-for="value in users" :value="value" :key="value">{{
+              value
+            }}</a-select-option>
+          </a-select>
+      <!-- <a-input v-model:value="addForm.charger" placeholder="系统A角"> </a-input> -->
     </a-form-item>
     <a-form-item>
       <a-input v-model:value="addForm.note" placeholder="备注"> </a-input>
@@ -104,9 +109,14 @@
         <a-form-item label="密码">
           <a-input v-model:value="editForm.password" />
         </a-form-item>
-        <a-form-item label="A角">
-          <a-input v-model:value="editForm.charger" />
-        </a-form-item>
+        <a-form-item  label="系统A角">
+      <a-select ref="select" v-model:value="editForm.charger">
+            <a-select-option v-for="value in users" :value="value" :key="value">{{
+              value
+            }}</a-select-option>
+          </a-select>
+      <!-- <a-input v-model:value="addForm.charger" placeholder="系统A角"> </a-input> -->
+    </a-form-item>
         <a-form-item label="备注">
           <a-input v-model:value="editForm.note" />
         </a-form-item>
@@ -141,8 +151,9 @@ const getAllUserName = async ()=>{
   await api.getAllUserName().then((res)=>{
     console.log("userName=>",res)
     users.value = res.map((item:any)=>{
-      return item.name
+      return item.userName
     })
+    console.log("userValue=>",users.value)
   })
 
 }
@@ -151,7 +162,7 @@ const addForm = ref<AddForm>({
   address: '',
   account: '',
   note: '',
-  charger: '',
+  charger: '段新宇',
   password: ''
 })
 const getData = async () => {
