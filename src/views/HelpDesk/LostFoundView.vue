@@ -45,7 +45,7 @@
           >
             重置
           </a-button>
-          <a-badge :count="pager.total" :overflow-count="999" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
+          <a-badge :count="pager.total" :overflow-count="100000" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
         </a-form-item>
       </a-form>
     </a-col>

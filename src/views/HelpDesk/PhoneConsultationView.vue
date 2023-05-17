@@ -44,7 +44,7 @@
         下载3011打不通登记表
       </a-button>
 
-      <a-badge :count="pager.total" :overflow-count="999" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
+      <a-badge :count="pager.total" :overflow-count="1000000" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
     </a-space>
     </a-form-item>
   </a-form>

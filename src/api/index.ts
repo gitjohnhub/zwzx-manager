@@ -76,8 +76,8 @@ export default {
   },
 
   //十部门综合窗口管理
-  generalWindowContact(params: any) {
-    return GET('/generalWindowContact/all', params)
+  generalWindowContact() {
+    return GET('/generalWindowContact/all')
   },
   addGeneralWindowContact(params: any) {
     return POST('/generalWindowContact/add', params)
