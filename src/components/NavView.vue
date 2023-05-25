@@ -61,8 +61,19 @@
           <RouterLink to="/GeneralWindowWorkManaul">
             <a-menu-item key="30">工作手册</a-menu-item>
           </RouterLink>
+        </a-sub-menu>
+
+        <a-sub-menu key="22" title="EMS" v-if="userInfo.roleList.includes('ems')">
+          <RouterLink to="/EmsDrawCert">
+            <a-menu-item key="50">一业一证</a-menu-item>
+          </RouterLink>
+
+          <!-- <RouterLink to="/GeneralWindowContact">
+            <a-menu-item key="16">联系表</a-menu-item>
+          </RouterLink> -->
 
         </a-sub-menu>
+
       </a-sub-menu>
       <a-sub-menu key="sub2">
         <template #icon>

@@ -75,6 +75,17 @@ export default {
     return POST('/phoneConsultation/add', params)
   },
 
+  //ems
+  emsDrawCert(params: any) {
+    return GET('/emsDrawCert/all', params)
+  },
+  updateemsDrawCert(params: any) {
+    return POST('/emsDrawCert/update', params)
+  },
+  addemsDrawCert(params: any) {
+    return POST('/emsDrawCert/add', params)
+  },
+
   //十部门综合窗口管理
   generalWindowContact() {
     return GET('/generalWindowContact/all')

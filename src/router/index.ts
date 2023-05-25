@@ -163,6 +163,15 @@ const routes = [
         },
         component:()=>import('@/views/Management/NetControlView.vue'),
       },
+      {
+        name:'EmsDrawCert',
+        path:'/EmsDrawCert',
+        meta:{
+          title:'一业一证领取',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/Ems/DrawCertView.vue'),
+      },
 
       {
         name:'GeneralWindowWorkManaul',

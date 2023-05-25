@@ -135,7 +135,7 @@ const resetForm = () => {
 }
 const dataSource = ref<DataItem[]>([])
 const getData = async () => {
-  await api.lostFoundAll(pager.value).then((res:any) => {
+  await api.emsDrawCert(pager.value).then((res:any) => {
     pager.value.pageNum = res.page.pageNum
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
@@ -146,21 +146,23 @@ const getData = async () => {
 }
 interface DataItem {
   _id: string
-  pickUpDate: string
-  itemType: string
-  withName?: string
-  IdNum?: string
-  hasDraw: number
-  createTime: string
-  note?:string
-  recorder:string,
-  confirmer?:string
+  companyName: String,
+  code: String,
+  legalPerson: String,
+  licenseCode: String,
+  licenseItems: [],
+  industryCategory: [],
+  drawName:String,
+  drawDate:String,
+  userName:String,
+  note:String,
+  createTime:String
 }
 // 搜索组件
 const searchText = ref('')
 const searchData = async () => {
   console.log("withName=>",searchText.value)
-  await api.lostFoundAll({withName:searchText.value}).then((res:any) => {
+  await api.emsDrawCert({companyName:searchText.value}).then((res:any) => {
     pager.value.pageNum = res.page.pageNum
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
@@ -260,9 +262,6 @@ const onConfirmHasDraw = async (record:any) => {
     record.companyName + '送达回执.xlsx'
   )
     message.info('确认成功')
-    const content = `<html><body><p style='text-align:center;font-size:24px;'>
-    政务中心遗失物领取确认单</p ><p style='font-size:16px;'>本人已领取以下遗失物品:</p><div style='text-align:left;font-size:16px;'><p>遗失时间：${record.pickUpDate.slice(0,10)}</p><p>物品类型:${record.itemType}</p><p>物品归属名称:${record.withName??'无'}</p><p>物品备注：${record.note??'无'}</p><p>领取人（签字）:___________________</p><p >领取人身份证号:___________________</p><p>领取日期：________年________月________日</p></body></html>"`
-    util.downloadFile(content,`${record.pickUpDate.slice(0,10)}${record.withName}失物招领.docx`)
   }
     )
 }
