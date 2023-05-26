@@ -247,8 +247,36 @@ const onConfirmHasDraw = async (record: any) => {
         B: record.code
       },
       {
-        A: '李四',
-        B: 20
+        A: '法定代表人（负责人）',
+        B: record.legalPerson
+      },
+      {
+        A: '行业综合许可证编号',
+        B: record.licenseCode
+      },
+      {
+        A: '许可项目',
+        B: record.licenseItems.join('、')
+      },
+      {
+        A: '行业类别',
+        B: record.industryCategory.join('、')
+      },
+      {
+        A: '领件人签字：',
+        B: ''
+      },
+      {
+        A: '领件日期',
+        B: ''
+      },
+      {
+        A: '发件人',
+        B: userStore.userInfo.userName
+      },
+      {
+        A: '备注',
+        B: record.note
       }
     ])
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
