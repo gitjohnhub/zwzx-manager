@@ -38,7 +38,8 @@
     </a-form-item>
     <a-form-item>
       <a-space>
-      <a-button @click="onSearch"> <SearchOutlined />按部门搜索 </a-button>
+        <a-button @click="onSearch"> <SearchOutlined />按部门搜索 </a-button>
+        <a-button @click="onItemSearch"> <SearchOutlined />按事项搜索 </a-button>
       <a-button @click="resetTable"> <monitor-outlined />重置搜索 </a-button>
       <a-button @click="downloadExcel"><download-outlined />
         下载3011打不通登记表
@@ -244,6 +245,17 @@ const onSearch = async () => {
     dataSource.value = res.list
   })
 }
+
+const onItemSearch = async () => {
+  await api.phoneConsultation({ item: addForm.value.item[0] }).then((res: any) => {
+    console.log('res=>', res)
+    pager.value.pageNum = res.page.pageNum
+    pager.value.pageSize = res.page.pageSize
+    pager.value.total = res.page.total
+    dataSource.value = res.list
+  })
+}
+
 
 const depts = [
   {
