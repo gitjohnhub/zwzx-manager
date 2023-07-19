@@ -237,7 +237,7 @@ const resetTable = () => {
   getData()
 }
 const onSearch = async () => {
-  await api.phoneConsultation({ dept: addForm.value.dept }).then((res: any) => {
+  await api.phoneConsultation({ dept: addForm.value.dept,pageNum: pager.value.pageNum,pageSize:pager.value.pageSize }).then((res: any) => {
     console.log('res=>', res)
     pager.value.pageNum = res.page.pageNum
     pager.value.pageSize = res.page.pageSize
@@ -247,7 +247,7 @@ const onSearch = async () => {
 }
 
 const onItemSearch = async () => {
-  await api.phoneConsultation({ item: addForm.value.item[0] }).then((res: any) => {
+  await api.phoneConsultation({ item: addForm.value.item[0],pageNum: pager.value.pageNum,pageSize:pager.value.pageSize }).then((res: any) => {
     console.log('res=>', res)
     pager.value.pageNum = res.page.pageNum
     pager.value.pageSize = res.page.pageSize
@@ -310,12 +310,19 @@ type AddForm = {
   userName: String
 }
 
-const changePage = (page: any) => {
+const changePage = async (page: any) => {
   pager.value.pageNum = page
   console.log(pager.value.pageNum)
-  getData()
+  if (addForm.value.item[0]){
+    onItemSearch()
+  }else if (addForm.value.dept){
+    onSearch()
+  }else{
+    getData()
+  }
 }
 const getData = async () => {
+  console.log("pager=>",pager.value)
   await api.phoneConsultation(pager.value).then((res: any) => {
     console.log('phoneConsultation=>', res)
     pager.value.pageNum = res.page.pageNum
