@@ -24,9 +24,12 @@
       </a-button>
     </a-form-item>
     <a-form-item>
+      <a-space>
       <a-button @click="onSearch"> <SearchOutlined />按部门搜索 </a-button>
+      <a-button @click="onItemSearch"> <SearchOutlined />按事项搜索 </a-button>
       <a-button @click="resetTable"> <delete-outlined />重置搜索 </a-button>
       <a-badge :count="pager.total" :overflow-count="100000" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
+      </a-space>
     </a-form-item>
   </a-form>
 
@@ -133,7 +136,17 @@ const resetTable = () => {
   getData()
 }
 const onSearch = async () => {
-  await api.onlineHelpAll({ dept: addForm.value.dept }).then((res: any) => {
+  await api.onlineHelpAll({ dept: addForm.value.dept,pageNum: pager.value.pageNum,pageSize:pager.value.pageSize  }).then((res: any) => {
+    console.log('res=>', res)
+    pager.value.pageNum = res.page.pageNum
+    pager.value.pageSize = res.page.pageSize
+    pager.value.total = res.page.total
+    dataSource.value = res.list
+  })
+}
+
+const onItemSearch = async () => {
+  await api.onlineHelpAll({ itemType: addForm.value.itemType,pageNum: pager.value.pageNum,pageSize:pager.value.pageSize }).then((res: any) => {
     console.log('res=>', res)
     pager.value.pageNum = res.page.pageNum
     pager.value.pageSize = res.page.pageSize
@@ -241,7 +254,13 @@ const results = [
 const changePage = (page: any) => {
   pager.value.pageNum = page
   console.log(pager.value.pageNum)
-  getData()
+  if(addForm.value.itemType){
+    onItemSearch()
+  }else if (addForm.value.dept){
+    onSearch()
+  }else{
+    getData()
+  }
 }
 const getData = async () => {
   await api.onlineHelpAll(pager.value).then((res: any) => {

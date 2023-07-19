@@ -162,7 +162,7 @@ const resetTable = () => {
   getData()
 }
 const onSearch = async () => {
-  await api.goodbadReviewAll({ itemType: addForm.value.itemType }).then((res: any) => {
+  await api.goodbadReviewAll({ itemType: addForm.value.itemType,pageNum: pager.value.pageNum,pageSize:pager.value.pageSize  }).then((res: any) => {
     console.log('res=>', res)
     pager.value.pageNum = res.page.pageNum
     pager.value.pageSize = res.page.pageSize
@@ -260,7 +260,11 @@ type AddForm = {
 const changePage = (page: any) => {
   pager.value.pageNum = page
   console.log(pager.value.pageNum)
-  getData()
+  if (addForm.value.itemType){
+    onSearch()
+  }else{
+    getData()
+  }
 }
 const getData = async () => {
   await api.goodbadReviewAll(pager.value).then((res: any) => {
