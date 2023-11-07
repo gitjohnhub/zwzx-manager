@@ -190,19 +190,7 @@ const pager = ref({
 })
 
 const onSearch = async () => {
-  await api
-    .goodbadReviewAll({
-      itemType: addForm.value.itemType,
-      current: pager.value.current,
-      pageSize: pager.value.pageSize
-    })
-    .then((res: any) => {
-      console.log('res=>', res)
-      pager.value.current = res.page.current
-      pager.value.pageSize = res.page.pageSize
-      pager.value.total = res.page.total
-      dataSource.value = res.list
-    })
+  getData({itemType:addForm.value.itemType})
 }
 
 const showModal = (record: AddForm) => {
@@ -286,8 +274,12 @@ type AddForm = {
 }
 
 
-const getData = async () => {
-  await api.goodbadReviewAll(pager.value).then((res: any) => {
+const getData = async (params?:any) => {
+  await api.goodbadReviewAll({
+    ...pager.value,
+    ...params
+  }
+    ).then((res: any) => {
     pager.value.current = res.page.current
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
