@@ -10,7 +10,10 @@
     <a-form-item label="姓名">
       <a-select
         v-model:value="addForm.name"
-        :options="[{ value: '先生', label: '先生' }, { value: '女士', label: '女士' }]"
+        :options="[
+          { value: '先生', label: '先生' },
+          { value: '女士', label: '女士' }
+        ]"
       ></a-select>
     </a-form-item>
     <a-form-item label="联系方式">
@@ -35,14 +38,24 @@
     </a-form-item>
     <a-form-item>
       <a-button @click="onSearch"> <SearchOutlined />按事项搜索 </a-button>
-      <a-button @click="resetTable"> <delete-outlined />重置搜索 </a-button>
-      <a-badge :count="pager.total" :overflow-count="100000" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
+      <a-button @click="resetTable"> 重置搜索 </a-button>
+      <a-badge
+        :count="pager.total"
+        :overflow-count="100000"
+        :number-style="{ backgroundColor: '#52c41a' }"
+      ></a-badge>
     </a-form-item>
   </a-form>
 
   <!-- table -->
 
-  <a-table :columns="columns" :data-source="dataSource" :pagination="false">
+  <a-table
+    :columns="columns"
+    :data-source="dataSource"
+    :pagination="pagination"
+    @change="handleChange"
+    @showSizeChange="onShowSizeChange"
+  >
     <template #headerCell="{ column }">
       <template v-if="column.key === 'dept'">
         <span style="color: #1890ff">所属部门</span>
@@ -103,17 +116,15 @@
 
       <template v-if="column.key === 'action'">
         <span>
-          <a-button type="primary" :disabled="record.hasReply != 0" style="inline" @click="showModal(record)">确认完结</a-button>
+          <a-button
+            type="primary"
+            :disabled="record.hasReply != 0"
+            style="inline"
+            @click="showModal(record)"
+            >确认完结</a-button
+          >
         </span>
       </template>
-    </template>
-    <template #footer>
-      <a-pagination
-        :total="pager.total"
-        :current="pager.pageNum"
-        :pageSize="pager.pageSize"
-        @change="changePage"
-      />
     </template>
   </a-table>
 
@@ -132,12 +143,10 @@
       </a-form>
     </a-modal>
   </div>
-
-
 </template>
 
 <script lang="ts" setup>
-import { ref, onBeforeMount } from 'vue'
+import { ref, onBeforeMount, computed } from 'vue'
 
 import api from '@/api'
 
@@ -148,10 +157,23 @@ import { message } from 'ant-design-vue'
 import { SearchOutlined } from '@ant-design/icons-vue'
 import { useUserStore } from '@/stores'
 // import { cloneDeep } from 'lodash-es';
-
+const onShowSizeChange = async (page: any) => {
+  console.log('showsizechangepage=>', page)
+}
 onBeforeMount(() => {
   getData()
 })
+// 分页
+const pagination = computed(() => {
+  return {
+    ...pager.value,
+    change: handleChange
+  }
+})
+const handleChange = async (page: any) => {
+  pager.value = page
+  getData()
+}
 
 //弹出框编辑用户权限模块
 const confirmReplyForm = ref()
@@ -161,19 +183,31 @@ const confirmLoading = ref<boolean>(false)
 const resetTable = () => {
   getData()
 }
+const pager = ref({
+  current: 1,
+  pageSize: 10,
+  total: 0
+})
+
 const onSearch = async () => {
-  await api.goodbadReviewAll({ itemType: addForm.value.itemType,pageNum: pager.value.pageNum,pageSize:pager.value.pageSize  }).then((res: any) => {
-    console.log('res=>', res)
-    pager.value.pageNum = res.page.pageNum
-    pager.value.pageSize = res.page.pageSize
-    pager.value.total = res.page.total
-    dataSource.value = res.list
-  })
+  await api
+    .goodbadReviewAll({
+      itemType: addForm.value.itemType,
+      current: pager.value.current,
+      pageSize: pager.value.pageSize
+    })
+    .then((res: any) => {
+      console.log('res=>', res)
+      pager.value.current = res.page.current
+      pager.value.pageSize = res.page.pageSize
+      pager.value.total = res.page.total
+      dataSource.value = res.list
+    })
 }
 
 const showModal = (record: AddForm) => {
   confirmReplyForm.value = record
-  console.log('confirmreplyForm=>',confirmReplyForm)
+  console.log('confirmreplyForm=>', confirmReplyForm)
   visible.value = true
 }
 const handleOk = async () => {
@@ -181,15 +215,13 @@ const handleOk = async () => {
   confirmLoading.value = true
   confirmReplyForm.value.replyContent = addForm.value.replyContent
   confirmReplyForm.value.hasReply = 1
-  await api.updategoodbadReview(confirmReplyForm.value).then(()=>{
+  await api.updategoodbadReview(confirmReplyForm.value).then(() => {
     visible.value = false
     message.info('提交成功')
     confirmLoading.value = false
     getData()
-  }
-  )
+  })
 }
-
 
 const formRef = ref<FormInstance>()
 const userInfo = useUserStore().userInfo
@@ -205,13 +237,9 @@ const addForm = ref<AddForm>({
   recorder: userInfo.userName,
   itemType: '企业变更',
   createTime: Date.now() + 8 * 60 * 60 * 1000,
-  replyContent:'',
+  replyContent: ''
 })
-const pager = ref({
-  pageNum: 1,
-  pageSize: 10,
-  total: 0
-})
+
 const itemTypes = [
   {
     value: '分支机构',
@@ -241,8 +269,8 @@ const results = [
   },
   {
     value: '直接回复',
-    label: '直接回复',
-  },
+    label: '直接回复'
+  }
 ]
 type AddForm = {
   numId: String
@@ -253,22 +281,14 @@ type AddForm = {
   hasReply: Number
   itemType: String
   createTime: Number
-  recorder: String,
-  replyContent:String
+  recorder: String
+  replyContent: String
 }
 
-const changePage = (page: any) => {
-  pager.value.pageNum = page
-  console.log(pager.value.pageNum)
-  if (addForm.value.itemType){
-    onSearch()
-  }else{
-    getData()
-  }
-}
+
 const getData = async () => {
   await api.goodbadReviewAll(pager.value).then((res: any) => {
-    pager.value.pageNum = res.page.pageNum
+    pager.value.current = res.page.current
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
     dataSource.value = res.list
@@ -284,7 +304,6 @@ const handleAdd = async () => {
   getData()
 }
 
-
 const columns_original = [
   { key: 'numId', title: '12345编号' },
   { key: 'name', title: '咨询姓名' },
@@ -297,7 +316,6 @@ const columns_original = [
   { key: 'createTime', title: '提交时间' },
   { key: 'recorder', title: '记录人' },
   { key: 'action', title: '确认完结' }
-
 ]
 
 const columns = columns_original.map((item) => {
