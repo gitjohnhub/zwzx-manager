@@ -39,21 +39,32 @@
     <a-form-item>
       <a-space>
         <a-button @click="onSearch"> <SearchOutlined />按部门搜索 </a-button>
-        <a-button @click="onItemSearch"> <SearchOutlined />按事项搜索 </a-button>
-      <a-button @click="resetTable"> <monitor-outlined />重置搜索 </a-button>
-      <a-button @click="downloadExcel"><download-outlined />
-        下载3011打不通登记表
-      </a-button>
+        <a-button @click="onSearch"> <SearchOutlined />按单一事项搜索 </a-button>
+        <a-button @click="resetTable"> <monitor-outlined />重置搜索 </a-button>
+        <a-button @click="downloadExcel"
+          ><download-outlined />
+          下载3011打不通登记表
+        </a-button>
 
-      <a-badge :count="pager.total" :overflow-count="1000000" :number-style="{ backgroundColor: '#52c41a' }"></a-badge>
-    </a-space>
+        <a-badge
+          :count="pager.total"
+          :overflow-count="1000000"
+          :number-style="{ backgroundColor: '#52c41a' }"
+        ></a-badge>
+      </a-space>
     </a-form-item>
   </a-form>
 
   <!-- table -->
   <a-divider></a-divider>
 
-  <a-table :columns="columns" :data-source="dataSource" :pagination="false">
+  <a-table
+    :columns="columns"
+    :data-source="dataSource"
+    @change="handleChange"
+    @showSizeChange="onShowSizeChange"
+    :pagination="pagination"
+  >
     <template #headerCell="{ column }">
       <template v-if="column.key === 'dept'">
         <span style="color: #1890ff">所属部门</span>
@@ -118,14 +129,6 @@
         </span>
       </template>
     </template>
-    <template #footer>
-      <a-pagination
-        :total="pager.total"
-        :current="pager.pageNum"
-        :pageSize="pager.pageSize"
-        @change="changePage"
-      />
-    </template>
   </a-table>
 
   <div>
@@ -164,7 +167,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onBeforeMount } from 'vue'
+import { ref, onBeforeMount, computed } from 'vue'
 
 import api from '@/api'
 
@@ -172,7 +175,7 @@ import type { FormInstance } from 'ant-design-vue'
 
 import { message } from 'ant-design-vue'
 
-import { SearchOutlined ,DownloadOutlined,MonitorOutlined} from '@ant-design/icons-vue'
+import { SearchOutlined, DownloadOutlined, MonitorOutlined } from '@ant-design/icons-vue'
 import { useUserStore } from '@/stores'
 // import { cloneDeep } from 'lodash-es';
 
@@ -210,8 +213,7 @@ const downloadExcel = () => {
   const file_date = new Date()
   const mydate = file_date.setHours(file_date.getHours() + 8)
 
-
-  link.setAttribute('download','3011_'+ new Date(mydate).toISOString()+'.xls')
+  link.setAttribute('download', '3011_' + new Date(mydate).toISOString() + '.xls')
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
@@ -220,7 +222,7 @@ const results = ['已告知电话', '已转接', '已处理']
 const dataSource = ref()
 // const options = ref<Array<string>>(['企业变更', '企业新办', '食品', '酒类'])
 const addForm = ref<AddForm>({
-  dept: '市场监督管理局',
+  dept: '',
   item: [],
   result: results[0],
   note: '',
@@ -228,34 +230,48 @@ const addForm = ref<AddForm>({
   userName: userInfo.userName
 })
 const pager = ref({
-  pageNum: 1,
+  current: 1,
   pageSize: 10,
   total: 0
 })
-
+const handleChange = async (page: any) => {
+  pager.value = page
+  getData()
+}
+const pagination = computed(() => {
+  return {
+    ...pager.value,
+    change: handleChange
+  }
+})
+const onShowSizeChange = async (page: any) => {
+  console.log('showsizechangepage=>', page)
+}
 const resetTable = () => {
+  addForm.value.dept =''
+  addForm.value.item = []
+  pager.value.current = 1
   getData()
 }
 const onSearch = async () => {
-  await api.phoneConsultation({ dept: addForm.value.dept,pageNum: pager.value.pageNum,pageSize:pager.value.pageSize }).then((res: any) => {
-    console.log('res=>', res)
-    pager.value.pageNum = res.page.pageNum
-    pager.value.pageSize = res.page.pageSize
-    pager.value.total = res.page.total
-    dataSource.value = res.list
-  })
+  getData()
 }
 
 const onItemSearch = async () => {
-  await api.phoneConsultation({ item: addForm.value.item[0],pageNum: pager.value.pageNum,pageSize:pager.value.pageSize }).then((res: any) => {
-    console.log('res=>', res)
-    pager.value.pageNum = res.page.pageNum
-    pager.value.pageSize = res.page.pageSize
-    pager.value.total = res.page.total
-    dataSource.value = res.list
-  })
+  await api
+    .phoneConsultation({
+      item: addForm.value.item[0],
+      current: pager.value.current,
+      pageSize: pager.value.pageSize
+    })
+    .then((res: any) => {
+      console.log('res=>', res)
+      pager.value.current = res.page.current
+      pager.value.pageSize = res.page.pageSize
+      pager.value.total = res.page.total
+      dataSource.value = res.list
+    })
 }
-
 
 const depts = [
   {
@@ -310,22 +326,20 @@ type AddForm = {
   userName: String
 }
 
-const changePage = async (page: any) => {
-  pager.value.pageNum = page
-  console.log(pager.value.pageNum)
-  if (addForm.value.item[0]){
-    onItemSearch()
-  }else if (addForm.value.dept){
-    onSearch()
-  }else{
-    getData()
+const getData = async (params?:any) => {
+  params = {
+    ...params,
+    ...pager.value
   }
-}
-const getData = async () => {
-  console.log("pager=>",pager.value)
-  await api.phoneConsultation(pager.value).then((res: any) => {
-    console.log('phoneConsultation=>', res)
-    pager.value.pageNum = res.page.pageNum
+  if (addForm.value.dept){
+    params.dept = addForm.value.dept
+  }
+  if(addForm.value){
+    params.item = addForm.value.item[0]
+  }
+  await api.phoneConsultation(params).then((res: any) => {
+    console.log('phoneConsultationRes=>', res)
+    pager.value.current = res.page.current
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
     dataSource.value = res.list
