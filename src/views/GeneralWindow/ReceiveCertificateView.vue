@@ -3,10 +3,10 @@
     <a-col :span="24">
       <a-form layout="inline" :model="addForm" ref="formRef" name="addForm">
         <a-form-item>
-          <a-input v-model:value="addForm.companyName" placeholder="公司名称" > </a-input>
+          <a-input v-model:value="addForm.companyName" placeholder="公司名称"> </a-input>
         </a-form-item>
         <a-form-item>
-          <a-input v-model:value="addForm.drawName" placeholder="领取人姓名" > </a-input>
+          <a-input v-model:value="addForm.drawName" placeholder="领取人姓名"> </a-input>
         </a-form-item>
         <a-form-item>
           <a-input v-model:value="addForm.drawId" placeholder="身份证号"> </a-input>
@@ -28,16 +28,23 @@
   </a-row>
   <a-row>
     <a-col :span="24">
-      <a-table bordered :data-source="dataSource" :columns="columns" :pagination="false">
+      <a-table
+        bordered
+        :data-source="dataSource"
+        :columns="columns"
+        @change="handleChange"
+        @showSizeChange="onShowSizeChange"
+        :pagination="pagination"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'createTime'">
-            {{ record.createTime ? record.createTime.slice(0,10) :'' }}
+            {{ record.createTime ? record.createTime.slice(0, 10) : '' }}
           </template>
           <template v-if="column.dataIndex === 'hasDraw'">
-            {{ record.hasDraw ? '已领取' :'未领取' }}
+            {{ record.hasDraw ? '已领取' : '未领取' }}
           </template>
           <template v-if="column.dataIndex === 'drawDate'">
-            {{ record.drawDate ? record.drawDate :'' }}
+            {{ record.drawDate ? record.drawDate : '' }}
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <a-popconfirm
@@ -49,50 +56,51 @@
             </a-popconfirm>
           </template>
         </template>
-        <template #footer>
-    <a-pagination
-      :total="pager.total"
-      :current="pager.pageNum"
-      :pageSize="pager.pageSize"
-      @change="changePage"
-    /></template>
       </a-table>
     </a-col>
   </a-row>
 </template>
 <script lang="ts" setup>
-import {  ref, onBeforeMount } from 'vue'
+import { ref, onBeforeMount,computed } from 'vue'
 import api from '@/api'
-import { useUserStore } from '@/stores';
-import type { FormInstance } from 'ant-design-vue';
-import { message } from 'ant-design-vue';
-import util from '@/utils/util';
-import type { Data } from '@antv/g2plot';
+import { useUserStore } from '@/stores'
+import type { FormInstance } from 'ant-design-vue'
+import { message } from 'ant-design-vue'
+import util from '@/utils/util'
+import type { Data } from '@antv/g2plot'
 // import { cloneDeep } from 'lodash-es';
 const userInfo = useUserStore().userInfo
 const pager = ref({
-  pageNum:1,
-  pageSize:10,
-  total:0
+  current: 1,
+  pageSize: 10,
+  total: 0
 })
-const changePage=(page:any)=>{
-  pager.value.pageNum = page
-  console.log(pager.value.pageNum)
+const handleChange = async (page: any) => {
+  pager.value = page
   getData()
+}
+const pagination = computed(() => {
+  return {
+    ...pager.value,
+    change: handleChange
+  }
+})
+const onShowSizeChange = async (page: any) => {
+  console.log('showsizechangepage=>', page)
 }
 
 onBeforeMount(() => {
   getData()
 })
 interface DataItem {
-  companyName: string,
-  drawName: string,
-  drawId: string,
-  drawContact: string,
-  drawDate:string,
-  hasDraw:number,
-  note:string,
-  confirmer:string,
+  companyName: string
+  drawName: string
+  drawId: string
+  drawContact: string
+  drawDate: string
+  hasDraw: number
+  note: string
+  confirmer: string
   createTime: string
 }
 const formRef = ref<FormInstance>()
@@ -102,13 +110,13 @@ const addForm = ref<DataItem>({
   drawName: '',
   drawId: '',
   drawContact: '',
-  drawDate:'',
-  hasDraw:0,
-  note:'',
-  confirmer:''
+  drawDate: '',
+  hasDraw: 0,
+  note: '',
+  confirmer: ''
 })
 const columns = [
-{
+  {
     title: '登记日期',
     dataIndex: 'createTime'
   },
@@ -152,36 +160,41 @@ const columns = [
 
 const dataSource = ref<DataItem[]>([])
 const getData = async () => {
-  await api.receiveCertificate(pager.value).then((res:any) => {
-    pager.value.pageNum = res.page.pageNum
+  await api.receiveCertificate(pager.value).then((res: any) => {
+    pager.value.current = res.page.current
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
     console.log('receiveCertificate=>', res)
     dataSource.value = res.list
   })
 }
-const onConfirmHasDraw = async (record:any) => {
-  await api.updateReceiveCertificate({_id:record._id,hasDraw:record.hasDraw,confirmer:userInfo.userName}).then(()=>{
-    message.info('确认成功')
-    const content = `<html><body><p style='text-align:center;font-size:24px;'>
-    民政执照领取确认单</p ><p style='font-size:16px;'>本人已领取以下执照:</p><div style='text-align:left;font-size:16px;'><p>公司名称：${record.companyName}</p><p>领取人姓名:${record.drawName}</p> <p >领取人身份证号:${record.drawId}</p><p>联系电话:${record.drawContact}</p><p>备注:${record.note??'无'}</p>
+const onConfirmHasDraw = async (record: any) => {
+  await api
+    .updateReceiveCertificate({
+      _id: record._id,
+      hasDraw: record.hasDraw,
+      confirmer: userInfo.userName
+    })
+    .then(() => {
+      message.info('确认成功')
+      const content = `<html><body><p style='text-align:center;font-size:24px;'>
+    民政执照领取确认单</p ><p style='font-size:16px;'>本人已领取以下执照:</p><div style='text-align:left;font-size:16px;'><p>公司名称：${
+      record.companyName
+    }</p><p>领取人姓名:${record.drawName}</p> <p >领取人身份证号:${record.drawId}</p><p>联系电话:${
+        record.drawContact
+      }</p><p>备注:${record.note ?? '无'}</p>
      <p>领取人（签字）:___________________</p><p>领取日期：________年________月________日</p></body></html>"`
-    util.downloadFile(content,`${record.companyName??'无'}民政执照领取确认单.docx`)
-    getData()
-  }
-    )
+      util.downloadFile(content, `${record.companyName ?? '无'}民政执照领取确认单.docx`)
+      getData()
+    })
 }
 
 const handleAdd = async () => {
-  addForm.value.createTime = new Date().toISOString().slice(0,10)
-  await api.addReceiveCertificate(addForm.value).then(()=>{
+  addForm.value.createTime = new Date().toISOString().slice(0, 10)
+  await api.addReceiveCertificate(addForm.value).then(() => {
     message.info('添加成功')
     getData()
   })
 }
-
-
 </script>
-<style>
-
-</style>
+<style></style>

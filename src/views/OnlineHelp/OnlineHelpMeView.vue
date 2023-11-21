@@ -35,7 +35,9 @@
 
   <!-- table -->
 
-  <a-table :columns="columns" :data-source="dataSource" :pagination="false">
+  <a-table :columns="columns" :data-source="dataSource"  @change="handleChange"
+    @showSizeChange="onShowSizeChange"
+    :pagination="pagination">
     <template #headerCell="{ column }">
       <template v-if="column.key === 'dept'">
         <span style="color: #1890ff">所属部门</span>
@@ -100,19 +102,11 @@
         </span>
       </template>
     </template>
-    <template #footer>
-      <a-pagination
-        :total="pager.total"
-        :current="pager.pageNum"
-        :pageSize="pager.pageSize"
-        @change="changePage"
-      />
-    </template>
   </a-table>
 </template>
 
 <script lang="ts" setup>
-import { ref, onBeforeMount } from 'vue'
+import { ref, onBeforeMount,computed } from 'vue'
 
 import api from '@/api'
 
@@ -136,19 +130,22 @@ const resetTable = () => {
   getData()
 }
 const onSearch = async () => {
-  await api.onlineHelpAll({ dept: addForm.value.dept,pageNum: pager.value.pageNum,pageSize:pager.value.pageSize  }).then((res: any) => {
+  await api.onlineHelpAll({ dept: addForm.value.dept,current: pager.value.current,pageSize:pager.value.pageSize  }).then((res: any) => {
     console.log('res=>', res)
-    pager.value.pageNum = res.page.pageNum
+    pager.value.current = res.page.current
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
     dataSource.value = res.list
   })
 }
+const onShowSizeChange = async (page: any) => {
+  console.log('showsizechangepage=>', page)
+}
 
 const onItemSearch = async () => {
-  await api.onlineHelpAll({ itemType: addForm.value.itemType,pageNum: pager.value.pageNum,pageSize:pager.value.pageSize }).then((res: any) => {
+  await api.onlineHelpAll({ itemType: addForm.value.itemType,current: pager.value.current,pageSize:pager.value.pageSize }).then((res: any) => {
     console.log('res=>', res)
-    pager.value.pageNum = res.page.pageNum
+    pager.value.current = res.page.current
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
     dataSource.value = res.list
@@ -176,7 +173,7 @@ const addForm = ref<AddForm>({
   createTime: Date.now() + 8 * 60 * 60 * 1000
 })
 const pager = ref({
-  pageNum: 1,
+  current: 1,
   pageSize: 10,
   total: 0
 })
@@ -251,21 +248,20 @@ const results = [
   }
 ]
 
-const changePage = (page: any) => {
-  pager.value.pageNum = page
-  console.log(pager.value.pageNum)
-  if(addForm.value.itemType){
-    onItemSearch()
-  }else if (addForm.value.dept){
-    onSearch()
-  }else{
-    getData()
-  }
+const handleChange = async (page: any) => {
+  pager.value = page
+  getData()
 }
+const pagination = computed(() => {
+  return {
+    ...pager.value,
+    change: handleChange
+  }
+})
 const getData = async () => {
   await api.onlineHelpAll(pager.value).then((res: any) => {
     console.log('onlineHelpAll=>', res)
-    pager.value.pageNum = res.page.pageNum
+    pager.value.current = res.page.current
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
     dataSource.value = res.list

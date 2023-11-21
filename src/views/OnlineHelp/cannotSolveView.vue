@@ -3,23 +3,17 @@
   <h1>{{ route.meta.title }}</h1>
 
   <a-form :model="addForm" ref="formRef" name="addForm" layout="inline">
-
     <a-form-item label="反映内容">
       <a-textarea v-model:value="addForm.content" placeholder="描述"> </a-textarea>
     </a-form-item>
     <a-form-item label="诉求联系人">
       <a-input v-model:value="addForm.name" placeholder="姓名"> </a-input>
-
     </a-form-item>
     <a-form-item label="联系方式">
       <a-input v-model:value="addForm.phoneNum" placeholder="联系方式"> </a-input>
     </a-form-item>
     <a-form-item label="来源渠道">
-      <a-select
-        v-model:value="addForm.channel"
-        style="width: 120px"
-        :options="channels"
-      ></a-select>
+      <a-select v-model:value="addForm.channel" style="width: 120px" :options="channels"></a-select>
     </a-form-item>
 
     <a-form-item label="所属事项">
@@ -39,14 +33,19 @@
       </a-button>
     </a-form-item>
     <a-form-item>
-
-    <a-button type="primary" danger style="inline" @click="downloadExcel()">表格下载</a-button>
+      <a-button type="primary" danger style="inline" @click="downloadExcel()">表格下载</a-button>
     </a-form-item>
   </a-form>
 
   <!-- table -->
 
-  <a-table :columns="columns" :data-source="dataSource" :pagination="false">
+  <a-table
+    :columns="columns"
+    :data-source="dataSource"
+    @change="handleChange"
+    @showSizeChange="onShowSizeChange"
+    :pagination="pagination"
+  >
     <template #headerCell="{ column }">
       <template v-if="column.key === 'dept'">
         <span style="color: #1890ff">所属部门</span>
@@ -107,23 +106,19 @@
 
       <template v-if="column.key === 'action'">
         <span>
-          <a-button type="primary" :disabled="record.hasReply != 0" style="inline" @click="showModal(record)">确认完结</a-button>
+          <a-button
+            type="primary"
+            :disabled="record.hasReply != 0"
+            style="inline"
+            @click="showModal(record)"
+            >确认完结</a-button
+          >
         </span>
-<!--
+        <!--
         <span>
           <a-button type="warning" :disabled="record.hasReply != 0" style="inline" @click="downloadExcel(record)">表格下载</a-button>
         </span> -->
-
-
       </template>
-    </template>
-    <template #footer>
-      <a-pagination
-        :total="pager.total"
-        :current="pager.pageNum"
-        :pageSize="pager.pageSize"
-        @change="changePage"
-      />
     </template>
   </a-table>
 
@@ -142,15 +137,11 @@
       </a-form>
     </a-modal>
   </div>
-
-
 </template>
 
 <script lang="ts" setup>
-import { ref, onBeforeMount } from 'vue'
-
+import { ref, onBeforeMount, computed } from 'vue'
 import api from '@/api'
-
 import type { FormInstance } from 'ant-design-vue'
 import { message } from 'ant-design-vue'
 import { SearchOutlined } from '@ant-design/icons-vue'
@@ -171,19 +162,19 @@ const confirmLoading = ref<boolean>(false)
 
 const showModal = (record: AddForm) => {
   confirmReplyForm.value = record
-  console.log('confirmreplyForm=>',confirmReplyForm)
+  console.log('confirmreplyForm=>', confirmReplyForm)
   visible.value = true
 }
 //下载表格
 const downloadExcel = () => {
-//   let wb = XLSX.utils.book_new()
-// // 创建工作表
-// let ws = XLSX.utils.aoa_to_sheet([['', 'abds']])
-// // 向工作簿添加工作表
-// XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
-// // 生成二进制数据
-// let wbout = XLSX.write(wb, {bookType:'xlsx', bookSST:false, type:'binary'})
-//   const file = new Blob([wbout], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"})
+  //   let wb = XLSX.utils.book_new()
+  // // 创建工作表
+  // let ws = XLSX.utils.aoa_to_sheet([['', 'abds']])
+  // // 向工作簿添加工作表
+  // XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+  // // 生成二进制数据
+  // let wbout = XLSX.write(wb, {bookType:'xlsx', bookSST:false, type:'binary'})
+  //   const file = new Blob([wbout], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"})
   // const url = window.URL.createObjectURL(file)
   const link = document.createElement('a')
   link.href = '/办不成事业务对接表.xls'
@@ -191,22 +182,19 @@ const downloadExcel = () => {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
-
 }
 const handleOk = async () => {
   modalText.value = 'The modal will be closed after two seconds'
   confirmLoading.value = true
   confirmReplyForm.value.replyContent = addForm.value.replyContent
   confirmReplyForm.value.hasReply = 1
-  await api.updateCannotSolve(confirmReplyForm.value).then(()=>{
+  await api.updateCannotSolve(confirmReplyForm.value).then(() => {
     visible.value = false
     message.info('提交成功')
     confirmLoading.value = false
     getData()
-  }
-  )
+  })
 }
-
 
 const formRef = ref<FormInstance>()
 const userInfo = useUserStore().userInfo
@@ -215,22 +203,36 @@ const dataSource = ref()
 const addForm = ref<AddForm>({
   name: '',
   phoneNum: '',
-  channel:'窗口',
+  channel: '窗口',
   content: '',
   result: '当场处理',
   hasReply: 0,
   recorder: userInfo.userName,
   itemType: '企业变更',
   createTime: Date.now() + 8 * 60 * 60 * 1000,
-  replyContent:'',
+  replyContent: ''
 })
 const pager = ref({
-  pageNum: 1,
+  current: 1,
   pageSize: 10,
   total: 0
 })
+const handleChange = async (page: any) => {
+  pager.value = page
+  getData()
+}
+const pagination = computed(() => {
+  return {
+    ...pager.value,
+    change: handleChange
+  }
+})
+
+const onShowSizeChange = async (page: any) => {
+  console.log('showsizechangepage=>', page)
+}
 const channels = [
-{
+  {
     value: '电话',
     label: '电话'
   },
@@ -268,11 +270,11 @@ const results = [
   },
   {
     value: '当场处理',
-    label: '当场处理',
-  },
+    label: '当场处理'
+  }
 ]
 type AddForm = {
-  channel:String
+  channel: String
   name: String
   phoneNum: String
   content: String
@@ -280,18 +282,18 @@ type AddForm = {
   hasReply: Number
   itemType: String
   createTime: Number
-  recorder: String,
-  replyContent:String
+  recorder: String
+  replyContent: String
 }
 
 const changePage = (page: any) => {
-  pager.value.pageNum = page
-  console.log(pager.value.pageNum)
+  pager.value.current = page
+  console.log(pager.value.current)
   getData()
 }
 const getData = async () => {
   await api.cannotSolve(pager.value).then((res: any) => {
-    pager.value.pageNum = res.page.pageNum
+    pager.value.current = res.page.current
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
     dataSource.value = res.list
@@ -307,7 +309,6 @@ const handleAdd = async () => {
   getData()
 }
 
-
 const columns_original = [
   { key: 'name', title: '咨询姓名' },
   { key: 'phoneNum', title: '联系方式' },
@@ -320,7 +321,6 @@ const columns_original = [
   { key: 'createTime', title: '提交时间' },
   { key: 'recorder', title: '记录人' },
   { key: 'action', title: '确认完结' }
-
 ]
 
 const columns = columns_original.map((item) => {

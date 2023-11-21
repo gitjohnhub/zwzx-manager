@@ -1,48 +1,55 @@
 <template>
-      <a-form :model="addForm" ref="formRef" name="addForm">
-        <a-form-item label="公司名称">
-          <a-input v-model:value="addForm.companyName" placeholder="公司名称"> </a-input>
-        </a-form-item>
-        <a-form-item label="组织社会信用代码">
-          <a-input v-model:value="addForm.code" placeholder="组织社会信用代码"> </a-input>
-        </a-form-item>
-        <a-form-item label="法人">
-          <a-input v-model:value="addForm.legalPerson" placeholder="法人"> </a-input>
-        </a-form-item>
-        <a-form-item label="行业综合许可证编号">
-          <a-input v-model:value="addForm.licenseCode" placeholder="行业综合许可证编号"> </a-input>
-        </a-form-item>
-        <a-form-item label="许可项目">
-          <a-checkbox-group v-model:value="addForm.licenseItems" :options="manyLicenseItems" />
-        </a-form-item>
-        <a-form-item label="行业类别">
-          <a-checkbox-group v-model:value="addForm.industryCategory" :options="industryCategories" />
-        </a-form-item>
+  <a-form :model="addForm" ref="formRef" name="addForm">
+    <a-form-item label="公司名称">
+      <a-input v-model:value="addForm.companyName" placeholder="公司名称"> </a-input>
+    </a-form-item>
+    <a-form-item label="组织社会信用代码">
+      <a-input v-model:value="addForm.code" placeholder="组织社会信用代码"> </a-input>
+    </a-form-item>
+    <a-form-item label="法人">
+      <a-input v-model:value="addForm.legalPerson" placeholder="法人"> </a-input>
+    </a-form-item>
+    <a-form-item label="行业综合许可证编号">
+      <a-input v-model:value="addForm.licenseCode" placeholder="行业综合许可证编号"> </a-input>
+    </a-form-item>
+    <a-form-item label="许可项目">
+      <a-checkbox-group v-model:value="addForm.licenseItems" :options="manyLicenseItems" />
+    </a-form-item>
+    <a-form-item label="行业类别">
+      <a-checkbox-group v-model:value="addForm.industryCategory" :options="industryCategories" />
+    </a-form-item>
 
-        <a-form-item label="备注">
-          <a-input v-model:value="addForm.note" placeholder="备注"> </a-input>
-        </a-form-item>
-        <a-form-item>
-          <a-button type="primary" block @click="handleAdd"> 增加 </a-button>
-        </a-form-item>
-        <a-form-item>
-          <a-input-search
-            v-model:value="searchText"
-            placeholder="搜索公司"
-            style="width: 200px"
-            @search="onSearch"
-          />
-          <a-button @click="resetForm"> 重置 </a-button>
-          <a-badge
-            :count="pager.total"
-            :overflow-count="100000"
-            :number-style="{ backgroundColor: '#52c41a' }"
-          ></a-badge>
-        </a-form-item>
-      </a-form>
+    <a-form-item label="备注">
+      <a-input v-model:value="addForm.note" placeholder="备注"> </a-input>
+    </a-form-item>
+    <a-form-item>
+      <a-button type="primary" block @click="handleAdd"> 增加 </a-button>
+    </a-form-item>
+    <a-form-item>
+      <a-input-search
+        v-model:value="searchText"
+        placeholder="搜索公司"
+        style="width: 200px"
+        @search="onSearch"
+      />
+      <a-button @click="resetForm"> 重置 </a-button>
+      <a-badge
+        :count="pager.total"
+        :overflow-count="100000"
+        :number-style="{ backgroundColor: '#52c41a' }"
+      ></a-badge>
+    </a-form-item>
+  </a-form>
   <a-row>
     <a-col :span="24">
-      <a-table bordered :data-source="dataSource" :columns="columns" :pagination="false">
+      <a-table
+        bordered
+        :data-source="dataSource"
+        :columns="columns"
+        @change="handleChange"
+        @showSizeChange="onShowSizeChange"
+        :pagination="pagination"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'licenseItems'">
             <span>
@@ -65,19 +72,12 @@
             </a-popconfirm>
           </template>
         </template>
-        <template #footer>
-          <a-pagination
-            :total="pager.total"
-            :current="pager.pageNum"
-            :pageSize="pager.pageSize"
-            @change="changePage"
-        /></template>
       </a-table>
     </a-col>
   </a-row>
 </template>
 <script lang="ts" setup>
-import { ref, onBeforeMount, watch } from 'vue'
+import { ref, onBeforeMount, watch, computed } from 'vue'
 import api from '@/api'
 import { useUserStore } from '@/stores'
 import type { FormInstance } from 'ant-design-vue'
@@ -90,14 +90,22 @@ import { saveAs } from 'file-saver'
 // import * as xlsx from 'js-xlsx'
 // import { cloneDeep } from 'lodash-es';
 const pager = ref({
-  pageNum: 1,
+  current: 1,
   pageSize: 10,
   total: 0
 })
-const changePage = (page: any) => {
-  pager.value.pageNum = page
-  console.log(pager.value.pageNum)
+const handleChange = async (page: any) => {
+  pager.value = page
   getData()
+}
+const pagination = computed(() => {
+  return {
+    ...pager.value,
+    change: handleChange
+  }
+})
+const onShowSizeChange = async (page: any) => {
+  console.log('showsizechangepage=>', page)
 }
 onBeforeMount(() => {
   getData()
@@ -105,7 +113,7 @@ onBeforeMount(() => {
 const userStore = useUserStore()
 const formRef = ref<FormInstance>()
 const manyLicenseItems = ['酒类零售', '食品经营', '消防检查']
-const industryCategories = ['便利店','小餐饮','咖啡店/茶馆',]
+const industryCategories = ['便利店', '小餐饮', '咖啡店/茶馆']
 const addForm = ref({
   companyName: '',
   code: '',
@@ -135,7 +143,7 @@ const resetForm = () => {
 const dataSource = ref<DataItem[]>([])
 const getData = async () => {
   await api.emsDrawCert(pager.value).then((res: any) => {
-    pager.value.pageNum = res.page.pageNum
+    pager.value.current = res.page.current
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
     resetForm()
@@ -162,7 +170,7 @@ const searchText = ref('')
 const searchData = async () => {
   console.log('companyName=>', searchText.value)
   await api.emsDrawCert({ companyName: searchText.value }).then((res: any) => {
-    pager.value.pageNum = res.page.pageNum
+    pager.value.current = res.page.current
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
     console.log('res=>', res)
