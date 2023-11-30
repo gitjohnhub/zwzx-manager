@@ -41,7 +41,7 @@
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'action'">
         <a-button @click="showEditModal(record)"> 事项归集 </a-button>
-        <a-modal v-model:visible="record.editVisible" @ok="handleEditOk" @cancel="handleEditCancel">
+        <a-modal v-model:visible="record.editVisible" @ok="handleEditOk(record)" @cancel="handleEditCancel">
           <a-form-item label="事项">
             <a-input v-model:value="editForm.item"> </a-input>
           </a-form-item>
@@ -49,7 +49,7 @@
             <a-select
               ref="select"
               v-model:value="editForm.dept"
-              style="width: 120px"
+              style="width: 220px"
               :options="depts"
             ></a-select>
           </a-form-item>
@@ -75,9 +75,6 @@ onBeforeMount(() => {
 })
 const itemDataSource = ref()
 const cannotHandleDataSource = ref<Array<{ item: string; dept: string }>>([])
-const addItem = (record: any) => {
-  console.log(record)
-}
 //编辑数据弹窗
 
 const editForm = ref()
@@ -85,17 +82,20 @@ const editOpen = ref<boolean>(false)
 
 const showEditModal = (record: any) => {
   editForm.value = record
+  editOpen.value = true
   record.editVisible = true
 }
-const handleEditOk = () => {
+const handleEditOk = (record:any) => {
   api
     .addItem({
       dept: editForm.value.dept,
       item: editForm.value.item
     })
     .then((res: any) => {
-      message.info('修改成功')
+      record.editVisible = false
+
       editOpen.value = false
+      message.info('修改成功')
     })
 }
 const handleEditCancel = () => {
@@ -134,6 +134,11 @@ const result_columns = [
     title: 'pad评价',
     dataIndex: 'pad_count',
     key: 'pad_count'
+  },
+  {
+    title: '总计',
+    dataIndex: 'total',
+    key: 'total'
   }
 ]
 const getItems = (params?: any) => {
@@ -189,11 +194,17 @@ const processExcel = async (file: any) => {
       }
     })
     // 转化为结果数组
-    result.value = Object.keys(deptCount).map((dept: string) => ({
+    result.value = Object.keys(deptCount).map((dept: string) => {
+      const count = deptCount[dept] == undefined ? 0 : deptCount[dept]
+      const pad_count =  pad_deptCount[dept] == undefined ? 0 : pad_deptCount[dept]
+      const total = Number(count) + Number(pad_count)
+      return {
       dept,
-      count: deptCount[dept] as number,
-      pad_count: pad_deptCount[dept] as number
-    }))
+      count,
+      pad_count,
+      total
+    }})
+    console.log(result.value)
     resolve(result.value)
   })
 }
@@ -247,7 +258,6 @@ const handleDept = (wrongDept: string): string => {
     case '程家桥街道社区事务受理中心':
       return '程家桥街道社区事务受理服务中心'
     case '新华路街道社区事务受理中心':
-      console.log('handled')
       return '新华路街道社区事务受理服务中心'
     case '仙霞新村街道社区事务受理中心':
       return '仙霞新村街道社区事务受理服务中心'
@@ -331,20 +341,30 @@ const statDepts = [
   '区公安分局',
   '团区委',
   '区残联',
-  '区民政局',
-  '区税务局',
+  '区民政局/行政服务中心综窗',
+  '区民政局/婚登中心',
+  '区税务局/办税服务厅',
+  '区税务局/行政服务中心综窗',
+  '区税务局/确权中心核税窗口',
   '区绿化市容局',
   '区建设管理委',
   '区生态环境局',
   '区民防办',
-  '区规划资源局',
-  '区房管局',
-  '区司法局',
-  '区人社局',
-  '区退役军人局',
+  '区规划资源局/审批审查中心窗口',
+  '区规划资源局/自然资源确权登记事务中心',
+  '区房管局/审批审查中心窗口',
+  '区房管局/公租房租赁',
+  '区司法局/公共法律服务中心',
+  '区司法局/公证处',
+  '区人社局/人才中心',
+  '区人社局/就促中心',
+  '区人社局/社会保障服务中心',
+  '区人社局/虹桥海外一站式人才服务中心',
+  '区退役军人局/退役军人服务中心',
   '区医保局',
   '区档案局',
-  '区科委',
+  '区科委/技术创新服务中心',
+  '区科委/行政服务中心综窗',
   '区烟草局',
   '新华街道',
   '江苏街道',
@@ -357,7 +377,7 @@ const statDepts = [
   '北新泾街道',
   '新泾镇'
 ]
-const depts = jiedaos.map((item: any) => {
+const depts = statDepts.map((item: any) => {
   return {
     label: item,
     value: item
