@@ -25,7 +25,6 @@ service.interceptors.request.use((req)=>{
 service.interceptors.response.use((res)=>{
   // TODO
   const {code,data,msg} = res.data;
-  console.log(res)
   if(code === 200){
     return data
   }else if (code === 20001 || code === 50001){
@@ -35,7 +34,6 @@ service.interceptors.response.use((res)=>{
     }, 1500);
     return Promise.reject(TOKEN_INVALID)
   }else{
-    console.log(res)
     message.error(msg || NETWORK_ERROR)
     return Promise.reject(msg || NETWORK_ERROR)
 
@@ -58,8 +56,6 @@ function request(options:any){
     service.defaults.baseURL = config.baseApi
   }else{
     service.defaults.baseURL = config.mock ? config.mockApi : config.baseApi
-    // console.log(config.mockApi)
-    // console.log(service.defaults.baseURL)
 
   }
   return service(options)

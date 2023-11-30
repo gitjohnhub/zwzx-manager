@@ -131,6 +131,13 @@ export default {
   getAllUserName(){
     return GET('/users/allUserName')
   },
+  // 12345统计
+  getItems(params?: any) {
+    return POST('/item/all', params)
+  },
+  addItem(params?: any) {
+    return POST('/item/add', params)
+  },
 
   //办不成事
   cannotSolve(params: any) {

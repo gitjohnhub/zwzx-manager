@@ -96,6 +96,9 @@
         <RouterLink to="/statistics">
           <a-menu-item key="7">数据统计</a-menu-item>
         </RouterLink>
+        <RouterLink to="/CalGoodBadReviewView">
+          <a-menu-item key="8">好差评计算</a-menu-item>
+        </RouterLink>
         <RouterLink to="/systemControl">
           <a-menu-item key="33">在用系统</a-menu-item>
         </RouterLink>

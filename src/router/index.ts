@@ -56,6 +56,15 @@ const routes = [
         component:()=>import('@/views/userManagmentView.vue'),
       },
       {
+        name:'CalGoodBadReviewView',
+        path:'/CalGoodBadReviewView',
+        meta:{
+          title:'计算好差评',
+          requiresAuth: true,
+        },
+        component:()=>import('@/views/Approvel/CalGoodBadReviewView.vue'),
+      },
+      {
         name:'GeneralWindowContact',
         path:'/GeneralWindowContact',
         meta:{
