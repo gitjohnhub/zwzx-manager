@@ -21,6 +21,9 @@
     </a-col> </a-row
   ><a-row>
     <a-col :span="24">
+      <a-button @click="exportExcel" type="primary" style="background-color: #1e1e1e">
+        导出Excel
+      </a-button>
       <a-card v-if="result.length > 0">
         <a-spin :spinning="spinning">
           <h2>承办部门统计结果：</h2>
@@ -41,7 +44,11 @@
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'action'">
         <a-button @click="showEditModal(record)"> 事项归集 </a-button>
-        <a-modal v-model:visible="record.editVisible" @ok="handleEditOk(record)" @cancel="handleEditCancel">
+        <a-modal
+          v-model:visible="record.editVisible"
+          @ok="handleEditOk(record)"
+          @cancel="handleEditCancel"
+        >
           <a-form-item label="事项">
             <a-input v-model:value="editForm.item"> </a-input>
           </a-form-item>
@@ -65,16 +72,85 @@
 </template>
 
 <script lang="ts" setup>
-import ExcelJS from 'exceljs'
+import Excel from 'exceljs'
 import { ref, onBeforeMount } from 'vue'
 import { InboxOutlined } from '@ant-design/icons-vue'
 import api from '@/api'
 import { message } from 'ant-design-vue'
+
 onBeforeMount(() => {
   getItems()
 })
 const itemDataSource = ref()
 const cannotHandleDataSource = ref<Array<{ item: string; dept: string }>>([])
+//数据导出功能
+const exportExcel = () => {
+  // 写入文件
+  const headersWithWidth = [
+    { header: '序号', key: 'index', width: 6 },
+    { header: '部门', key: 'dept', width: 10 },
+    { header: '非pad评价', key: 'personID', width: 26 },
+    { header: 'pad评价', key: 'payMonth', width: 12 },
+    { header: '合计', key: 'startDate', width: 24 },
+  ]
+  const { workbook, headers, worksheet } = genWorkbook(headersWithWidth)
+  worksheet.addRow(headers)
+  worksheet.mergeCells('A1:H1')
+  worksheet.getCell('A1').value = `统计表`
+  worksheet.getCell('H1').alignment = { vertical: 'middle', horizontal: 'center' }
+
+  result.value.map((item: any, index: number) => {
+    worksheet.addRow([index + 1, item.dept, item.count, item.pad_count, item.total])
+  })
+  worksheet.pageSetup.printArea = `A1:E${itemDataSource.value.length + 4}`
+  worksheet.eachRow((row, rowNumber) => {
+    row.font = { size: 15 }
+    row.eachCell((cell, colNumber) => {
+      cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    })
+  })
+  worksheet.getRow(2).font = { size: 15, bold: true }
+  worksheet.getRow(1).font = { size: 18, bold: true }
+
+  // 导出 Excel 文件
+  downloadLink(workbook, `test.xlsx`)
+}
+function downloadLink(workbook: any, filename: string) {
+  workbook.xlsx.writeBuffer().then((buffer: any) => {
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${filename}.xlsx`
+    link.click()
+    window.URL.revokeObjectURL(url)
+  })
+}
+function genWorkbook(headersWithWidth:any) {
+  const workbook = new Excel.Workbook()
+  const worksheet = workbook.addWorksheet('Sheet1', {
+    pageSetup: {
+      orientation: 'landscape',
+      showGridLines: true,
+      fitToPage: true,
+      fitToWidth: 1,
+      fitToHeight: 1,
+      horizontalCentered: true,
+      verticalCentered: true,
+      paperSize: 9
+    }
+  })
+  worksheet.columns = headersWithWidth
+  const headers = headersWithWidth.map((item: any) => item.header)
+
+  return {
+    workbook,
+    headers,
+    worksheet
+  }
+}
 //编辑数据弹窗
 
 const editForm = ref()
@@ -85,7 +161,7 @@ const showEditModal = (record: any) => {
   editOpen.value = true
   record.editVisible = true
 }
-const handleEditOk = (record:any) => {
+const handleEditOk = (record: any) => {
   api
     .addItem({
       dept: editForm.value.dept,
@@ -152,7 +228,7 @@ const result = ref<Array<{ dept: string; count: number }>>([])
 const processExcel = async (file: any) => {
   spinning.value = true
   return new Promise(async (resolve, reject) => {
-    const workbook = new ExcelJS.Workbook()
+    const workbook = new Excel.Workbook()
     await workbook.xlsx.load(file)
     // 获取第一个表格的数据
     const firstSheet = workbook.getWorksheet('Sheet1')
@@ -196,14 +272,15 @@ const processExcel = async (file: any) => {
     // 转化为结果数组
     result.value = Object.keys(deptCount).map((dept: string) => {
       const count = deptCount[dept] == undefined ? 0 : deptCount[dept]
-      const pad_count =  pad_deptCount[dept] == undefined ? 0 : pad_deptCount[dept]
+      const pad_count = pad_deptCount[dept] == undefined ? 0 : pad_deptCount[dept]
       const total = Number(count) + Number(pad_count)
       return {
-      dept,
-      count,
-      pad_count,
-      total
-    }})
+        dept,
+        count,
+        pad_count,
+        total
+      }
+    })
     console.log(result.value)
     resolve(result.value)
   })
