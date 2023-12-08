@@ -1,7 +1,7 @@
 <template>
   <!-- 数字识别 -->
-  <a-row>
-    <a-col :span="24">
+  <a-tabs v-model:activeKey="activeKey">
+    <a-tab-pane key="1" tab="上传">
       <a-card style="width: 1200px">
         <a-upload-dragger
           v-model:fileList="fileList"
@@ -18,9 +18,38 @@
           <p class="ant-upload-hint">只支持.xlsx</p>
         </a-upload-dragger>
       </a-card>
-    </a-col> </a-row
-  ><a-row>
-    <a-col :span="24">
+    </a-tab-pane>
+    <a-tab-pane key="2" tab="未统计" force-render>
+      <a-table
+        :dataSource="cannotHandleDataSource"
+        :columns="columns"
+        v-if="cannotHandleDataSource.length > 0"
+      >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'action'">
+            <a-button @click="showEditModal(record)"> 事项归集 </a-button>
+            <a-modal
+              v-model:visible="record.editVisible"
+              @ok="handleEditOk(record)"
+              @cancel="handleEditCancel"
+            >
+              <a-form-item label="事项">
+                <a-input v-model:value="editForm.item"> </a-input>
+              </a-form-item>
+              <a-form-item label="部门" name="jiezhen" has-feedback>
+                <a-select
+                  ref="select"
+                  v-model:value="editForm.dept"
+                  style="width: 220px"
+                  :options="depts"
+                ></a-select>
+              </a-form-item>
+            </a-modal>
+          </template>
+        </template>
+      </a-table>
+    </a-tab-pane>
+    <a-tab-pane key="3" tab="结果">
       <a-button @click="exportExcel" type="primary" style="background-color: #1e1e1e">
         导出Excel
       </a-button>
@@ -31,56 +60,28 @@
             :dataSource="result"
             :columns="result_columns"
             v-if="cannotHandleDataSource.length > 0"
+            :pagination="false"
           />
         </a-spin>
       </a-card>
-    </a-col>
-  </a-row>
-  <a-table
-    :dataSource="cannotHandleDataSource"
-    :columns="columns"
-    v-if="cannotHandleDataSource.length > 0"
-  >
-    <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'action'">
-        <a-button @click="showEditModal(record)"> 事项归集 </a-button>
-        <a-modal
-          v-model:visible="record.editVisible"
-          @ok="handleEditOk(record)"
-          @cancel="handleEditCancel"
-        >
-          <a-form-item label="事项">
-            <a-input v-model:value="editForm.item"> </a-input>
-          </a-form-item>
-          <a-form-item label="部门" name="jiezhen" has-feedback>
-            <a-select
-              ref="select"
-              v-model:value="editForm.dept"
-              style="width: 220px"
-              :options="depts"
-            ></a-select>
-          </a-form-item>
-        </a-modal>
-      </template>
-    </template>
-  </a-table>
-
-  <!-- <div>
-    <input type="file" @change="handleFileChange" />
-
-  </div> -->
+    </a-tab-pane>
+  </a-tabs>
 </template>
 
 <script lang="ts" setup>
 import Excel from 'exceljs'
-import { ref, onBeforeMount } from 'vue'
+import { ref, onBeforeMount, computed } from 'vue'
 import { InboxOutlined } from '@ant-design/icons-vue'
 import api from '@/api'
 import { message } from 'ant-design-vue'
+import { convertLegacyProps } from 'ant-design-vue/es/button/buttonTypes'
+import { P } from '@antv/g2plot'
 
 onBeforeMount(() => {
   getItems()
 })
+const activeKey = ref('1')
+
 const itemDataSource = ref()
 const cannotHandleDataSource = ref<Array<{ item: string; dept: string }>>([])
 //数据导出功能
@@ -91,7 +92,7 @@ const exportExcel = () => {
     { header: '部门', key: 'dept', width: 10 },
     { header: '非pad评价', key: 'personID', width: 26 },
     { header: 'pad评价', key: 'payMonth', width: 12 },
-    { header: '合计', key: 'startDate', width: 24 },
+    { header: '合计', key: 'startDate', width: 24 }
   ]
   const { workbook, headers, worksheet } = genWorkbook(headersWithWidth)
   worksheet.addRow(headers)
@@ -128,7 +129,7 @@ function downloadLink(workbook: any, filename: string) {
     window.URL.revokeObjectURL(url)
   })
 }
-function genWorkbook(headersWithWidth:any) {
+function genWorkbook(headersWithWidth: any) {
   const workbook = new Excel.Workbook()
   const worksheet = workbook.addWorksheet('Sheet1', {
     pageSetup: {
@@ -227,6 +228,8 @@ const result = ref<Array<{ dept: string; count: number }>>([])
 
 const processExcel = async (file: any) => {
   spinning.value = true
+  const cannotSolveworkbook = new Excel.Workbook()
+  const cannotSolveworkbookSheet = cannotSolveworkbook.addWorksheet('Sheet1')
   return new Promise(async (resolve, reject) => {
     const workbook = new Excel.Workbook()
     await workbook.xlsx.load(file)
@@ -242,11 +245,11 @@ const processExcel = async (file: any) => {
       const dept = handleDept(row[8])
       const source = handleSource(row[2])
       // 先根据部门判断
-      if (jiedaos.includes(dept)) {
+      if (statDepts.includes(dept)) {
         if (source == '评价PAD') {
-          pad_deptCount[dept] = (pad_deptCount[dept] || 0) + 1
+          pad_deptCount[dept] = (pad_deptCount[dept]|| 0) + 1
         } else {
-          deptCount[dept] = (deptCount[dept] || 0) + 1
+          deptCount[dept] = (deptCount[dept]|| 0) + 1
         }
       } else {
         const matchingRow = itemDataSource.value.find((item: any) => {
@@ -255,16 +258,17 @@ const processExcel = async (file: any) => {
         if (matchingRow) {
           const dept = matchingRow.dept // 承办部门列
           if (source == '评价PAD') {
-            pad_deptCount[dept] = (pad_deptCount[dept] || 0) + 1
+            pad_deptCount[dept] = (pad_deptCount[dept]||0) + 1
           } else {
-            deptCount[dept] = (deptCount[dept] || 0) + 1
+            deptCount[dept] = (deptCount[dept]||0) + 1
           }
         } else {
+          cannotSolveworkbookSheet.addRow(row)
           cannotHandleDataSource.value.push({ item: row[12], dept: row[8] })
           if (source == '评价PAD') {
-            pad_deptCount['未知'] = (pad_deptCount['未知'] || 0) + 1
+            pad_deptCount['未知'] = (pad_deptCount['未知']||0) + 1
           } else {
-            deptCount['未知'] = (deptCount['未知'] || 0) + 1
+            deptCount['未知'] = (deptCount['未知']||0) + 1
           }
         }
       }
@@ -280,6 +284,11 @@ const processExcel = async (file: any) => {
         pad_count,
         total
       }
+    })
+    result.value.sort((a,b)=>{
+      const a_index = partialDept.findIndex(obj => obj.current === a.dept);
+      const b_index = partialDept.findIndex(obj => obj.current === b.dept);
+      return a_index - b_index
     })
     console.log(result.value)
     resolve(result.value)
@@ -307,7 +316,7 @@ const customRequest = (options: any) => {
     })
 }
 const handleRemove = (file: File) => {
-  const index = fileList.value!.indexOf(file)
+  const index = fileList.value.indexOf(file)
   const newFileList = fileList.value.slice()
   newFileList.splice(index, 1)
   fileList.value = newFileList
@@ -324,83 +333,6 @@ const handleSource = (wrongSource: string): string => {
       return wrongSource
   }
 }
-const handleDept = (wrongDept: string): string => {
-  switch (wrongDept) {
-    case '周家桥街道社区事务受理中心':
-      return '周家桥街道社区事务受理服务中心'
-    case '天山路街道社区事务受理中心':
-      return '天山路街道社区事务受理服务中心'
-    case '华阳路街道社区事务受理中心':
-      return '华阳路街道社区事务受理服务中心'
-    case '程家桥街道社区事务受理中心':
-      return '程家桥街道社区事务受理服务中心'
-    case '新华路街道社区事务受理中心':
-      return '新华路街道社区事务受理服务中心'
-    case '仙霞新村街道社区事务受理中心':
-      return '仙霞新村街道社区事务受理服务中心'
-    case '新泾镇社区事务受理中心':
-      return '新泾镇社区事务受理服务中心'
-    case '北新泾街道社区事务受理中心':
-      return '北新泾街道社区事务受理服务中心'
-    case '虹桥街道社区事务受理中心':
-      return '虹桥街道社区事务受理服务中心'
-    case '江苏路街道社区事务受理中心':
-      return '江苏路街道社区事务受理服务中心'
-    case '长宁区程家桥街道社区事务受理服务中心':
-      return '程家桥街道社区事务受理服务中心'
-    case '长宁区社会保障服务中心':
-      return '长宁区人力资源和社会保障局'
-    case '长宁区公共法律服务中心办事大厅':
-      return '长宁区法律援助中心'
-    case '长宁区司法局':
-      return '长宁区法律援助中心'
-    default:
-      return wrongDept
-  }
-  // df['办理点/线下大厅'].replace('程家桥街道社区事务受理中心','程家桥街道社区事务受理服务中心',inplace=True)
-  // df['办理点/线下大厅'].replace('新华路街道社区事务受理中心','新华路街道社区事务受理服务中心',inplace=True)
-  // df['办理点/线下大厅'].replace('仙霞新村街道社区事务受理中心','仙霞新村街道社区事务受理服务中心',inplace=True)
-  // df['办理点/线下大厅'].replace('新泾镇社区事务受理中心','新泾镇社区事务受理服务中心',inplace=True)
-  // df['办理点/线下大厅'].replace('北新泾街道社区事务受理中心','北新泾街道社区事务受理服务中心',inplace=True)
-  // df['办理点/线下大厅'].replace('虹桥街道社区事务受理中心','虹桥街道社区事务受理服务中心',inplace=True)
-  // df['办理点/线下大厅'].replace('江苏路街道社区事务受理中心','江苏路街道社区事务受理服务中心',inplace=True)
-  // df['办理点/线下大厅'].replace('长宁区程家桥街道社区事务受理服务中心','程家桥街道社区事务受理服务中心',inplace=True)
-  // df['办理点/线下大厅'].replace('长宁区社会保障服务中心','长宁区人力资源和社会保障局',inplace=True)
-  // df['办理点/线下大厅'].replace('长宁区公共法律服务中心办事大厅','长宁区法律援助中心',inplace=True)
-  // df['办理点/线下大厅'].replace('长宁区司法局','长宁区法律援助中心',inplace=True)
-  // df['数据来源'].replace('PC端','非动态',inplace=True)
-  // df['数据来源'].replace('二维码','非动态',inplace=True)
-  // df['数据来源'].replace('移动端','非动态',inplace=True)
-}
-const jiedaos = [
-  '新华路街道社区事务受理服务中心',
-  '江苏路街道社区事务受理服务中心',
-  '华阳路街道社区事务受理服务中心',
-  '周家桥街道社区事务受理服务中心',
-  '天山路街道社区事务受理服务中心',
-  '仙霞新村街道社区事务受理服务中心',
-  '虹桥街道社区事务受理服务中心',
-  '程家桥街道社区事务受理服务中心',
-  '北新泾街道社区事务受理服务中心',
-  '新泾镇社区事务受理服务中心',
-  '就业促进中心',
-  '上海市长宁公证处',
-  '虹桥海外一站式人才服务中心',
-  '长宁区退役军人服务中心',
-  '长宁区医疗保险事务中心',
-  '上海市长宁区技术创新服务中心',
-  '长宁区烟草专卖局',
-  '长宁区人力资源和社会保障局',
-  '长宁区法律援助中心',
-  '自然资源确权登记事务中心',
-  '长宁区残联',
-  '长宁区档案馆',
-  '长宁区婚姻（收养）登记中心',
-  '长宁区卫健委',
-  '长宁区教育局',
-  '长宁区市场监督管理局',
-  '长宁房地产交易中心'
-]
 const statDepts = [
   '区府办',
   '区市场监管局',
@@ -454,6 +386,231 @@ const statDepts = [
   '北新泾街道',
   '新泾镇'
 ]
+const partialDept = [
+  {
+    current: '区府办',
+    wrong: []
+  },
+  {
+    current: '区市场监管局',
+    wrong: ['长宁区市场监督管理局']
+  },
+  {
+    current: '区发展改革委',
+    wrong: []
+  },
+  {
+    current: '区商务委',
+    wrong: []
+  },
+  {
+    current: '区民宗办',
+    wrong: []
+  },
+  {
+    current: '区财政局',
+    wrong: []
+  },
+  {
+    current: '区体育局',
+    wrong: []
+  },
+  {
+    current: '区应急局',
+    wrong: []
+  },
+  {
+    current: '区投促办',
+    wrong: []
+  },
+  {
+    current: '区教育局',
+    wrong: ['长宁区教育局']
+  },
+  {
+    current: '区委宣传部',
+    wrong: []
+  },
+  {
+    current: '区文化旅游局',
+    wrong: []
+  },
+  {
+    current: '区卫生健康委',
+    wrong: ['长宁区卫健委']
+  },
+  {
+    current: '区公安分局',
+    wrong: []
+  },
+  {
+    current: '团区委',
+    wrong: []
+  },
+  {
+    current: '区残联',
+    wrong: ['长宁区残联']
+  },
+  {
+    current: '区民政局/行政服务中心综窗',
+    wrong: []
+  },
+  {
+    current: '区民政局/婚登中心',
+    wrong: ['长宁区婚姻（收养）登记中心']
+  },
+  {
+    current: '区税务局/办税服务厅',
+    wrong: []
+  },
+  {
+    current: '区税务局/行政服务中心综窗',
+    wrong: []
+  },
+  {
+    current: '区税务局/确权中心核税窗口',
+    wrong: []
+  },
+  {
+    current: '区绿化市容局',
+    wrong: []
+  },
+  {
+    current: '区建设管理委',
+    wrong: []
+  },
+  {
+    current: '区生态环境局',
+    wrong: []
+  },
+  {
+    current: '区民防办',
+    wrong: []
+  },
+  {
+    current: '区规划资源局/审批审查中心窗口',
+    wrong: []
+  },
+  {
+    current: '区规划资源局/自然资源确权登记事务中心',
+    wrong: ['自然资源确权登记事务中心']
+  },
+  {
+    current: '区房管局/审批审查中心窗口',
+    wrong: []
+  },
+  {
+    current: '区房管局/公租房租赁',
+    wrong: ['长宁房地产交易中心']
+  },
+  {
+    current: '区司法局/公共法律服务中心',
+    wrong: ['长宁区公共法律服务中心办事大厅', '长宁区司法局','长宁区法律援助中心']
+  },
+  {
+    current: '区司法局/公证处',
+    wrong: ['上海市长宁公证处']
+  },
+  {
+    current: '区人社局/人才中心',
+    wrong: []
+  },
+  {
+    current: '区人社局/就促中心',
+    wrong: ['就业促进中心']
+  },
+  {
+    current: '区人社局/社会保障服务中心',
+    wrong: ['长宁区社会保障服务中心','长宁区人力资源和社会保障局']
+  },
+  {
+    current: '区人社局/虹桥海外一站式人才服务中心',
+    wrong: ['虹桥海外一站式人才服务中心']
+  },
+  {
+    current: '区退役军人局/退役军人服务中心',
+    wrong: ['长宁区退役军人服务中心']
+  },
+  {
+    current: '区医保局',
+    wrong: ['长宁区医疗保险事务中心']
+  },
+  {
+    current: '区档案局',
+    wrong: ['长宁区档案馆']
+  },
+  {
+    current: '区科委/技术创新服务中心',
+    wrong: ['上海市长宁区技术创新服务中心']
+  },
+  {
+    current: '区科委/行政服务中心综窗',
+    wrong: []
+  },
+  {
+    current: '区烟草局',
+    wrong: ['长宁区烟草专卖局']
+  },
+  {
+    current: '新华街道',
+    wrong: ['新华路街道社区事务受理中心', '新华路街道社区事务受理服务中心']
+  },
+  {
+    current: '江苏街道',
+    wrong: ['江苏路街道社区事务受理中心', '江苏路街道社区事务受理服务中心']
+  },
+  {
+    current: '华阳街道',
+    wrong: ['华阳路街道社区事务受理中心', '华阳路街道社区事务受理服务中心']
+  },
+  {
+    current: '周桥街道',
+    wrong: ['周家桥街道社区事务受理中心', '周家桥街道社区事务受理服务中心']
+  },
+  {
+    current: '天山街道',
+    wrong: ['天山路街道社区事务受理中心', '天山路街道社区事务受理服务中心']
+  },
+  {
+    current: '仙霞街道',
+    wrong: ['仙霞新村街道社区事务受理中心', '仙霞新村街道社区事务受理服务中心']
+  },
+  {
+    current: '虹桥街道',
+    wrong: ['虹桥街道社区事务受理中心', '虹桥街道社区事务受理服务中心']
+  },
+  {
+    current: '程桥街道',
+    wrong: [
+      '程家桥街道社区事务受理中心',
+      '程家桥街道社区事务受理服务中心',
+      '长宁区程家桥街道社区事务受理服务中心'
+    ]
+  },
+  {
+    current: '北新泾街道',
+    wrong: ['北新泾街道社区事务受理中心', '北新泾街道社区事务受理服务中心']
+  },
+  {
+    current: '新泾镇',
+    wrong: ['新泾镇社区事务受理中心', '新泾镇社区事务受理服务中心']
+  }
+]
+const handleDept = (wrongDept: string): string => {
+  const currentDept = partialDept.find((item) => item.wrong.includes(wrongDept))
+  let value = ''
+  if (currentDept == undefined) {
+    value =  wrongDept
+  } else {
+    value=  currentDept.current
+  }
+  // console.log(`${wrongDept}-${currentDept?.current}-${value}`)
+
+  return value
+
+}
+
+
 const depts = statDepts.map((item: any) => {
   return {
     label: item,
