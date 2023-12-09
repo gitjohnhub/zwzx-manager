@@ -60,7 +60,6 @@
         <a-table
           :dataSource="filteredResult"
           :columns="result_columns"
-          v-if="cannotHandleDataSource.length > 0"
           :pagination="false"
         />
       </a-card>
@@ -74,8 +73,6 @@ import { ref, onBeforeMount, computed } from 'vue'
 import { InboxOutlined } from '@ant-design/icons-vue'
 import api from '@/api'
 import { message } from 'ant-design-vue'
-import { convertLegacyProps } from 'ant-design-vue/es/button/buttonTypes'
-import { P } from '@antv/g2plot'
 
 onBeforeMount(() => {
   getItems()
@@ -83,7 +80,7 @@ onBeforeMount(() => {
 const activeKey = ref('1')
 
 const itemDataSource = ref()
-const cannotHandleDataSource = ref<Array<{ item: string; dept: string }>>([])
+const cannotHandleDataSource = ref<Array<any>>([])
 //数据导出功能
 const exportExcel = () => {
   // 写入文件
@@ -105,6 +102,7 @@ const exportExcel = () => {
   })
   worksheet.pageSetup.printArea = `A1:E${itemDataSource.value.length + 4}`
   worksheet.eachRow((row, rowNumber) => {
+
     row.font = { size: 15 }
     row.eachCell((cell, colNumber) => {
       cell.alignment = { vertical: 'middle', horizontal: 'center' }
@@ -185,10 +183,16 @@ const columns = [
     dataIndex: 'item',
     key: 'item'
   },
+
   {
     title: '部门',
     dataIndex: 'dept',
     key: 'dept'
+  },
+  {
+    title: '窗口',
+    dataIndex: 'window',
+    key: 'window'
   },
   {
     title: 'action',
@@ -234,7 +238,7 @@ const processExcel = async (file: any) => {
     const workbook = new Excel.Workbook()
     await workbook.xlsx.load(file)
     // 获取第一个表格的数据
-    const firstSheet = workbook.getWorksheet('Sheet1')
+    const firstSheet = workbook.getWorksheet(1)
     const firstSheetData = getSheetData(firstSheet)
 
     // 统计承办部门数量
@@ -242,8 +246,9 @@ const processExcel = async (file: any) => {
     const pad_deptCount: any = {}
     firstSheetData.forEach((row: any, index: number) => {
       const itemName = row[12] // 事项名称/主题名称列
-      const dept = handleDept(row[8])
-      const source = handleSource(row[2])
+      const window = row[9] // 窗口列
+      const dept = handleDept(row[8]) // 承办部门列
+      const source = handleSource(row[2]) // 评价来源列
       // 先根据部门判断
       if (statDepts.includes(dept)) {
         if (source == '评价PAD') {
@@ -251,26 +256,40 @@ const processExcel = async (file: any) => {
         } else {
           deptCount[dept] = (deptCount[dept] || 0) + 1
         }
-      } else {
-        const matchingRow = itemDataSource.value.find((item: any) => {
-          return item.item == itemName
-        })
-        if (matchingRow) {
-          const dept = matchingRow.dept // 承办部门列
-          if (source == '评价PAD') {
-            pad_deptCount[dept] = (pad_deptCount[dept] || 0) + 1
-          } else {
-            deptCount[dept] = (deptCount[dept] || 0) + 1
-          }
+        return
+      }
+      //再根据事项判断
+      const matchingRow = itemDataSource.value.find((item: any) => {
+        return item.item == itemName
+      })
+      if (matchingRow) {
+        const dept = matchingRow.dept // 承办部门列
+        if (source == '评价PAD') {
+          pad_deptCount[dept] = (pad_deptCount[dept] || 0) + 1
         } else {
-          cannotSolveworkbookSheet.addRow(row)
-          cannotHandleDataSource.value.push({ item: row[12], dept: row[8] })
-          if (source == '评价PAD') {
-            pad_deptCount['未知'] = (pad_deptCount['未知'] || 0) + 1
-          } else {
-            deptCount['未知'] = (deptCount['未知'] || 0) + 1
-          }
+          deptCount[dept] = (deptCount[dept] || 0) + 1
         }
+        return
+      }
+      //再根据窗口判断
+      for (const obj of partialDept) {
+        if (obj.window && obj.window.includes(window)) {
+          if (source == '评价PAD') {
+            pad_deptCount[obj.correct] = (pad_deptCount[obj.correct] || 0) + 1
+          } else {
+            deptCount[obj.correct] = (deptCount[obj.correct] || 0) + 1
+          }
+          return
+        }
+      }
+      // 如果没有匹配到，则添加到无法处理的表格
+      cannotSolveworkbookSheet.addRow(row)
+      console.log(row)
+      cannotHandleDataSource.value.push({ item: row[12], dept: row[8], window: window })
+      if (source == '评价PAD') {
+        pad_deptCount['未知'] = (pad_deptCount['未知'] || 0) + 1
+      } else {
+        deptCount['未知'] = (deptCount['未知'] || 0) + 1
       }
     })
     // 转化为结果数组
@@ -285,26 +304,33 @@ const processExcel = async (file: any) => {
         total
       }
     })
+    console.log(result.value)
     // result.value.sort((a, b) => {
     //   const a_index = partialDept.findIndex((obj) => obj.correct === a.dept)
     //   const b_index = partialDept.findIndex((obj) => obj.correct === b.dept)
     //   return a_index - b_index
     // })
     filteredResult.value = partialDept.map((item) => {
-      const matchingResult = result.value.find((resultItem:any) => resultItem.dept === item.correct)
+      const matchingResult = result.value.find(
+        (resultItem: any) => resultItem.dept === item.correct
+      )
       return {
         dept: item.correct,
         count: matchingResult ? matchingResult.count : 0,
-        pad_count:matchingResult? matchingResult.pad_count : 0,
-        total:matchingResult? matchingResult.total : 0,
+        pad_count: matchingResult ? matchingResult.pad_count : 0,
+        total: matchingResult ? matchingResult.total : 0
       }
     })
-    resolve(result.value)
+    console.log('filteredResult==>',filteredResult.value)
+    resolve(filteredResult.value)
   })
 }
 const getSheetData = (sheet: any) => {
   const data: any = []
   sheet.eachRow({ includeEmpty: true }, (row: any, rowNumber: any) => {
+    if (rowNumber === 1) {
+      return
+    }
     data[rowNumber - 1] = row.values
   })
   return data
@@ -342,15 +368,16 @@ const handleSource = (wrongSource: string): string => {
       return wrongSource
   }
 }
-
 const partialDept = [
   {
     correct: '区府办',
-    wrong: []
+    wrong: [],
+    window:['14']
   },
   {
     correct: '区市场监管局',
-    wrong: ['长宁区市场监督管理局']
+    wrong: ['长宁区市场监督管理局'],
+    window: ['01', '02', '03', '04', '05', '06', '07', '08', '09','10','12','13','24', '16a']
   },
   {
     correct: '区发展改革委',
@@ -362,7 +389,8 @@ const partialDept = [
   },
   {
     correct: '区民宗办',
-    wrong: []
+    wrong: [],
+    window:['26','28']
   },
   {
     correct: '区财政局',
@@ -394,7 +422,8 @@ const partialDept = [
   },
   {
     correct: '区卫生健康委',
-    wrong: ['长宁区卫健委']
+    wrong: ['长宁区卫健委'],
+    window:['22']
   },
   {
     correct: '区公安分局',
@@ -410,7 +439,8 @@ const partialDept = [
   },
   {
     correct: '区民政局/行政服务中心综窗',
-    wrong: []
+    wrong: [],
+    window:['25']
   },
   {
     correct: '区民政局/婚登中心',
@@ -434,11 +464,11 @@ const partialDept = [
   },
   {
     correct: '区建设管理委',
-    wrong: []
+    wrong: ['上海市住房和城乡建设管理委员会']
   },
   {
     correct: '区生态环境局',
-    wrong: []
+    wrong: ['长宁区绿化和市容管理局']
   },
   {
     correct: '区民防办',
@@ -450,15 +480,16 @@ const partialDept = [
   },
   {
     correct: '区规划资源局/自然资源确权登记事务中心',
-    wrong: ['自然资源确权登记事务中心']
+    wrong: ['自然资源确权登记事务中心','长宁区自然资源确权登记事务中心']
   },
   {
     correct: '区房管局/审批审查中心窗口',
-    wrong: []
+    wrong: [],
+    window:['C01','C02','C03','C04','C05']
   },
   {
     correct: '区房管局/公租房租赁',
-    wrong: ['长宁房地产交易中心']
+    wrong: ['长宁房地产交易中心','长宁区住房保障和房屋管理局']
   },
   {
     correct: '区司法局/公共法律服务中心',
@@ -470,7 +501,8 @@ const partialDept = [
   },
   {
     correct: '区人社局/人才中心',
-    wrong: []
+    wrong: ['长宁区人才服务中心'],
+    window:['D01','D02','D03','D04','D05','D06','D07','D08','D09']
   },
   {
     correct: '区人社局/就促中心',
