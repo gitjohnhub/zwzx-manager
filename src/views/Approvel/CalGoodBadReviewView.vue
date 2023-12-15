@@ -484,7 +484,7 @@ const partialDept = [
   },
   {
     correct: '区规划资源局/审批审查中心窗口',
-    wrong: []
+    wrong: ['上海市规划和自然资源局']
   },
   {
     correct: '区规划资源局/自然资源确权登记事务中心',
