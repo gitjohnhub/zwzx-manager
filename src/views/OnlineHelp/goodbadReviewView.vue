@@ -258,6 +258,10 @@ const results = [
   {
     value: '直接回复',
     label: '直接回复'
+  },
+  {
+    value: '拒绝',
+    label: '拒绝'
   }
 ]
 type AddForm = {
