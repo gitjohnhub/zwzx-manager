@@ -7,14 +7,16 @@
     <a-col :span="12">
       <goodBadReviewChartView :data="goodBadReview_stat_by_itemType" />
       <goodBadReviewMonthBarView :data="goodBadReview_stat_by_month" />
-
     </a-col>
     <a-col :span="12">
       <phoneColEchart :data="phoneConsultationStatData_By_dept" />
-     <userStateEchart :data="user_stat_by_state" />
+      <userStateEchart :data="user_stat_by_state" />
     </a-col>
     <a-col :span="12">
       <phoneByUserView :data="phone_stat_byuser_curmonth" />
+      <phoneByMonthBarView :data="phone_stat_by_month" />
+    </a-col>
+    <a-col :span="12">
       <EchartView :lostFound_pie_data="lostFound_pie_data" />
     </a-col>
   </a-row>
@@ -28,6 +30,8 @@ import userStateEchart from '@/components/Echarts/userStateEchart.vue'
 import phoneByUserView from '@/components/Echarts/phoneByUserView.vue'
 import goodBadReviewChartView from '@/components/Echarts/goodBadReviewChartView.vue'
 import goodBadReviewMonthBarView from '@/components/Echarts/goodBadReviewMonthBarView.vue'
+import phoneByMonthBarView from '@/components/Echarts/phoneByMonthBarView.vue'
+
 onBeforeMount(() => {
   getLostFoundStatData()
   getPhoneConsultationStatData_By_dept()
@@ -35,6 +39,7 @@ onBeforeMount(() => {
   getPhone_stat_byuser_curmonth()
   getGoodBadReview_stat_by_itemType()
   getGoodBadReview_stat_by_month()
+  getPhoneByMonth_stat_by_month()
 })
 const lostFound_pie_data = ref({})
 const getLostFoundStatData = async () => {
@@ -44,9 +49,14 @@ const getLostFoundStatData = async () => {
 }
 const phoneConsultationStatData_By_dept = ref({})
 const getPhoneConsultationStatData_By_dept = async () => {
-  await api.phoneConsultationStatData_By_dept({ startDate: datePicker.value[0], endDate: datePicker.value[1] }).then((res: any) => {
-    phoneConsultationStatData_By_dept.value = res
-  })
+  await api
+    .phoneConsultationStatData_By_dept({
+      startDate: datePicker.value[0],
+      endDate: datePicker.value[1]
+    })
+    .then((res: any) => {
+      phoneConsultationStatData_By_dept.value = res
+    })
 }
 const user_stat_by_state = ref({})
 const getUser_stat_by_state = async () => {
@@ -59,7 +69,6 @@ const dateChange = () => {
   getPhone_stat_byuser_curmonth()
   getPhoneConsultationStatData_By_dept()
   getGoodBadReview_stat_by_itemType()
-
 }
 const phone_stat_byuser_curmonth = ref({})
 const datePicker = ref([])
@@ -73,18 +82,30 @@ const getPhone_stat_byuser_curmonth = async () => {
 const goodBadReview_stat_by_itemType = ref({})
 const getGoodBadReview_stat_by_itemType = async () => {
   await api
-    .goodBadReview_stat_by_itemType({ startDate: datePicker.value[0], endDate: datePicker.value[1] })
+    .goodBadReview_stat_by_itemType({
+      startDate: datePicker.value[0],
+      endDate: datePicker.value[1]
+    })
     .then((res: any) => {
       goodBadReview_stat_by_itemType.value = res
     })
 }
 const goodBadReview_stat_by_month = ref({})
 
-const getGoodBadReview_stat_by_month = async ()=>{
-  await api.goodBadReview_stat_by_month().then((res:any)=>{
+const getGoodBadReview_stat_by_month = async () => {
+  await api.goodBadReview_stat_by_month().then((res: any) => {
     goodBadReview_stat_by_month.value = res
   })
 }
+
+const phone_stat_by_month = ref({})
+
+const getPhoneByMonth_stat_by_month = async () => {
+  await api.phoneByMonth_stat_by_month().then((res: any) => {
+    phone_stat_by_month.value = res
+  })
+}
+
 
 // const getPhoneConsultationStatData_By_dept = async () => {
 //   await api.phoneConsultationStatData_By_dept().then((res: any) => {

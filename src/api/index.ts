@@ -5,8 +5,7 @@ import { POST, GET } from '../utils/request'
 import request from '../utils/request'
 export default {
   /*
-   * 用户管理模块
-   */
+getPhoneByMonth_stat_by_month   */
   login(params: any) {
     return POST('/users/login', params)
   },
@@ -162,6 +161,9 @@ export default {
   //电话按照时间按分类统计
   phone_stat_byuser_curmonth(params: any) {
     return GET('/phoneConsultation/phone_stat_byuser_curmonth', params)
+  },
+  phoneByMonth_stat_by_month(){
+    return GET('/phoneConsultation/stat_by_month')
   },
   //用户离职在职数量统计
   user_stat_by_state() {
