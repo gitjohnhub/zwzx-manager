@@ -71,6 +71,7 @@
           placeholder="选择结果"
           :options="resultWithLabel"
         />
+        <a-range-picker v-model:value="dateRangeValue" />
         <a-button @click="resetSearch"> <SearchOutlined />重置搜索 </a-button>
 
         <a-badge
@@ -204,8 +205,16 @@ import { message } from 'ant-design-vue'
 
 import { SearchOutlined, DownloadOutlined, MonitorOutlined } from '@ant-design/icons-vue'
 import { useUserStore } from '@/stores'
+import type { Dayjs } from 'dayjs';
+type RangeValue = [Dayjs, Dayjs];
+const dateRangeValue = ref<RangeValue>();
 // import { cloneDeep } from 'lodash-es';
-
+watch(()=>dateRangeValue.value,()=>{
+  if(dateRangeValue.value){
+    console.log(dateRangeValue.value[1].toISOString())
+  }
+  getData()
+})
 onBeforeMount(() => {
   getData()
 })
@@ -369,6 +378,10 @@ const getData = async (params?: any) => {
   params = {
     ...params,
     ...pager.value
+  }
+  if(dateRangeValue.value){
+    params.startDate = dateRangeValue.value[0].toISOString()
+    params.endDate = dateRangeValue.value[1].toISOString()
   }
   if (selectedDept.value.length > 0){
     params.dept = JSON.stringify(selectedDept.value)
