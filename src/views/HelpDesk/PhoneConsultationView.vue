@@ -50,30 +50,31 @@
     </a-col>
     <a-col :span="12">
       <a-card  title="筛选" >
+        <a-space direction="vertical">
         <a-select
           v-model:value="selectedDept"
           mode="multiple"
-          style="width: 100%"
+          style="width: 300px"
           placeholder="选择部门"
           :options="deptsWithLabel"
         />
         <a-select
           v-model:value="selectedItem"
           mode="multiple"
-          style="width: 100%"
+          style="width: 300px"
           placeholder="选择事项"
           :options="itemWithLabel"
         />
         <a-select
           v-model:value="selectedResult"
           mode="multiple"
-          style="width: 100%"
+          style="width: 300px"
           placeholder="选择结果"
           :options="resultWithLabel"
         />
         <a-range-picker v-model:value="dateRangeValue" />
         <a-button @click="resetSearch"> <SearchOutlined />重置搜索 </a-button>
-
+      </a-space>
         <a-badge
           :count="pager.total"
           :overflow-count="1000000"
