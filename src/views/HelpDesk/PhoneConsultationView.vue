@@ -1,59 +1,86 @@
 <template>
   <!-- form -->
-  <a-form :model="addForm" ref="formRef" name="addForm">
-    <!-- <a-form-item>
+  <a-row>
+    <a-col :span="12">
+      <a-card  title="登记">
+        <a-form :model="addForm" ref="formRef" name="addForm">
+          <!-- <a-form-item>
       <a-button type="primary" danger block @click="downloadExcel">
         下载3011打不通登记表
       </a-button>
     </a-form-item> -->
-    <a-form-item label="所属部门">
-      <a-select ref="select" v-model:value="addForm.dept">
-        <a-select-option v-for="value in depts" :value="value.dept" :key="value">{{
-          value.dept
-        }}</a-select-option>
-      </a-select>
-    </a-form-item>
-    <a-form-item label="事项">
-      <a-checkbox-group v-model:value="addForm.item" :options="itemTypes" />
-    </a-form-item>
-    <a-form-item label="结果">
-      <a-select ref="select" v-model:value="addForm.result">
-        <a-select-option v-for="value in results" :value="value" :key="value">{{
-          value
-        }}</a-select-option>
-      </a-select>
-    </a-form-item>
-    <!-- Form文本 -->
+          <a-form-item label="所属部门">
+            <a-select ref="select" v-model:value="addForm.dept">
+              <a-select-option v-for="value in depts" :value="value.dept" :key="value">{{
+                value.dept
+              }}</a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item label="事项">
+            <a-checkbox-group v-model:value="addForm.item" :options="itemTypes" />
+          </a-form-item>
+          <a-form-item label="结果">
+            <a-select ref="select" v-model:value="addForm.result">
+              <a-select-option v-for="value in results" :value="value" :key="value">{{
+                value
+              }}</a-select-option>
+            </a-select>
+          </a-form-item>
+          <!-- Form文本 -->
 
-    <a-form-item label="备注">
-      <a-input v-model:value="addForm.note" placeholder="备注"> </a-input>
-    </a-form-item>
+          <a-form-item label="备注">
+            <a-input v-model:value="addForm.note" placeholder="备注"> </a-input>
+          </a-form-item>
 
-    <!-- Form Button -->
+          <!-- Form Button -->
 
-    <a-form-item>
-      <a-button type="primary" block @click="handleAdd" :disabled="addForm.item.length === 0">
-        增加记录
-      </a-button>
-    </a-form-item>
-    <a-form-item>
-      <a-space>
-        <a-button @click="onSearch"> <SearchOutlined />按部门搜索 </a-button>
-        <a-button @click="onSearch"> <SearchOutlined />按单一事项搜索 </a-button>
-        <a-button @click="resetTable"> <monitor-outlined />重置搜索 </a-button>
-        <a-button @click="downloadExcel"
-          ><download-outlined />
-          下载3011打不通登记表
-        </a-button>
+          <a-form-item>
+            <a-button type="primary" block @click="handleAdd" :disabled="addForm.item.length === 0">
+              增加记录
+            </a-button>
+          </a-form-item>
+          <a-form-item>
+            <a-button @click="downloadExcel" block
+              ><download-outlined />
+              下载3011打不通登记表
+            </a-button>
+          </a-form-item>
+        </a-form>
+      </a-card>
+    </a-col>
+    <a-col :span="12">
+      <a-card  title="筛选" >
+        <a-select
+          v-model:value="selectedDept"
+          mode="multiple"
+          style="width: 100%"
+          placeholder="选择部门"
+          :options="deptsWithLabel"
+        />
+        <a-select
+          v-model:value="selectedItem"
+          mode="multiple"
+          style="width: 100%"
+          placeholder="选择事项"
+          :options="itemWithLabel"
+        />
+        <a-select
+          v-model:value="selectedResult"
+          mode="multiple"
+          style="width: 100%"
+          placeholder="选择结果"
+          :options="resultWithLabel"
+        />
+        <a-button @click="resetSearch"> <SearchOutlined />重置搜索 </a-button>
 
         <a-badge
           :count="pager.total"
           :overflow-count="1000000"
           :number-style="{ backgroundColor: '#52c41a' }"
         ></a-badge>
-      </a-space>
-    </a-form-item>
-  </a-form>
+      </a-card>
+    </a-col>
+  </a-row>
 
   <!-- table -->
   <a-divider></a-divider>
@@ -167,7 +194,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onBeforeMount, computed } from 'vue'
+import { ref, onBeforeMount, computed,watch } from 'vue'
 
 import api from '@/api'
 
@@ -182,97 +209,6 @@ import { useUserStore } from '@/stores'
 onBeforeMount(() => {
   getData()
 })
-
-const formRef = ref<FormInstance>()
-const userInfo = useUserStore().userInfo
-const itemTypes = [
-  '企业变更',
-  '企业新办',
-  '企业迁入',
-  '特种设备',
-  '食品',
-  '酒类',
-  '停车预约',
-  '税务',
-  '公共卫生',
-  '其他',
-  '3011不接'
-]
-const downloadExcel = () => {
-  //   let wb = XLSX.utils.book_new()
-  // // 创建工作表
-  // let ws = XLSX.utils.aoa_to_sheet([['', 'abds']])
-  // // 向工作簿添加工作表
-  // XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
-  // // 生成二进制数据
-  // let wbout = XLSX.write(wb, {bookType:'xlsx', bookSST:false, type:'binary'})
-  //   const file = new Blob([wbout], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"})
-  // const url = window.URL.createObjectURL(file)
-  const link = document.createElement('a')
-  link.href = '/3011打不通.xls'
-  const file_date = new Date()
-  const mydate = file_date.setHours(file_date.getHours() + 8)
-
-  link.setAttribute('download', '3011_' + new Date(mydate).toISOString() + '.xls')
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-}
-const results = ['已告知电话', '已转接', '已处理']
-const dataSource = ref()
-// const options = ref<Array<string>>(['企业变更', '企业新办', '食品', '酒类'])
-const addForm = ref<AddForm>({
-  dept: '',
-  item: [],
-  result: results[0],
-  note: '',
-  createTime: Date.now() + 8 * 60 * 60 * 1000,
-  userName: userInfo.userName
-})
-const pager = ref({
-  current: 1,
-  pageSize: 10,
-  total: 0
-})
-const handleChange = async (page: any) => {
-  pager.value = page
-  getData()
-}
-const pagination = computed(() => {
-  return {
-    ...pager.value,
-    change: handleChange
-  }
-})
-const onShowSizeChange = async (page: any) => {
-  console.log('showsizechangepage=>', page)
-}
-const resetTable = () => {
-  addForm.value.dept =''
-  addForm.value.item = []
-  pager.value.current = 1
-  getData()
-}
-const onSearch = async () => {
-  getData()
-}
-
-const onItemSearch = async () => {
-  await api
-    .phoneConsultation({
-      item: addForm.value.item[0],
-      current: pager.value.current,
-      pageSize: pager.value.pageSize
-    })
-    .then((res: any) => {
-      console.log('res=>', res)
-      pager.value.current = res.page.current
-      pager.value.pageSize = res.page.pageSize
-      pager.value.total = res.page.total
-      dataSource.value = res.list
-    })
-}
-
 const depts = [
   {
     dept: '市场监督管理局',
@@ -316,6 +252,101 @@ const depts = [
     item: ['其他']
   }
 ]
+const formRef = ref<FormInstance>()
+const userInfo = useUserStore().userInfo
+const selectedDept = ref([])
+const deptsWithLabel = computed(() => {
+  return depts.map((item: any) => {
+    return {
+      label: item.dept,
+      value: item.dept
+    }
+  })
+})
+const itemTypes = [
+  '企业变更',
+  '企业新办',
+  '企业迁入',
+  '特种设备',
+  '食品',
+  '酒类',
+  '停车预约',
+  '税务',
+  '公共卫生',
+  '其他',
+  '3011不接'
+]
+const selectedItem = ref([])
+const itemWithLabel = computed(() => {
+  return itemTypes.map((item: any) => {
+    return {
+      label: item,
+      value: item
+    }
+  })
+})
+const selectedResult = ref([])
+const resultWithLabel = computed(() => {
+  return results.map((item: any) => {
+    return {
+      label: item,
+      value: item
+    }
+  })
+})
+const downloadExcel = () => {
+  const link = document.createElement('a')
+  link.href = '/3011打不通.xls'
+  const file_date = new Date()
+  const mydate = file_date.setHours(file_date.getHours() + 8)
+
+  link.setAttribute('download', '3011_' + new Date(mydate).toISOString() + '.xls')
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+const results = ['已告知电话', '已转接', '已处理']
+const dataSource = ref()
+// const options = ref<Array<string>>(['企业变更', '企业新办', '食品', '酒类'])
+const addForm = ref<AddForm>({
+  dept: '',
+  item: [],
+  result: results[0],
+  note: '',
+  createTime: Date.now() + 8 * 60 * 60 * 1000,
+  userName: userInfo.userName
+})
+const pager = ref({
+  current: 1,
+  pageSize: 10,
+  total: 0
+})
+const handleChange = async (page: any) => {
+  pager.value = page
+  getData()
+}
+const pagination = computed(() => {
+  return {
+    ...pager.value,
+    change: handleChange
+  }
+})
+const onShowSizeChange = async (page: any) => {
+  console.log('showsizechangepage=>', page)
+}
+const resetTable = () => {
+  addForm.value.dept = ''
+  addForm.value.item = []
+  pager.value.current = 1
+  getData()
+}
+// TODO: 重置搜索
+const resetSearch = async () => {
+  selectedDept.value = []
+  selectedItem.value = []
+  selectedResult.value = []
+  getData()
+}
 
 type AddForm = {
   dept: String
@@ -325,20 +356,30 @@ type AddForm = {
   note: String
   userName: String
 }
-
-const getData = async (params?:any) => {
+watch(()=>selectedDept.value, () => {
+  getData()
+})
+watch(()=>selectedItem.value, () => {
+  getData()
+})
+watch(()=>selectedResult.value, () => {
+  getData()
+})
+const getData = async (params?: any) => {
   params = {
     ...params,
     ...pager.value
   }
-  if (addForm.value.dept){
-    params.dept = addForm.value.dept
+  if (selectedDept.value.length > 0){
+    params.dept = JSON.stringify(selectedDept.value)
   }
-  if(addForm.value){
-    params.item = addForm.value.item[0]
+  if(selectedItem.value.length > 0){
+    params.item =  JSON.stringify(selectedItem.value)
+  }
+  if(selectedResult.value.length > 0){
+    params.result =  JSON.stringify(selectedResult.value)
   }
   await api.phoneConsultation(params).then((res: any) => {
-    console.log('phoneConsultationRes=>', res)
     pager.value.current = res.page.current
     pager.value.pageSize = res.page.pageSize
     pager.value.total = res.page.total
